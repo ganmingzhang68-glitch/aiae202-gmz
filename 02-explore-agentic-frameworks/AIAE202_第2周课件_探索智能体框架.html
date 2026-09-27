@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 2 周课件 · 探索智能体框架 — AIAE202</title>
+<style>
+:root{
+  --paper:#FAFAF7; --ink:#22303B; --soft:#5A6873;
+  --navy:#1B3A5C; --teal:#2A7F7A; --amber:#B5761B; --wine:#A8425E;
+  --rule:#D9DEE3; --code:#F0F3F4;
+  --tbg:#182530; --tink:#DAE5ED; --tdim:#7E93A3;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",Georgia,serif;
+  --sans:"Noto Sans SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:clamp(17px,1.55vw,23px);line-height:1.7}
+.deckwrap{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+#toc{position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--rule);padding:1rem .85rem 3.5rem;font-size:.78rem;line-height:1.5}
+#toc .navhead{font-family:var(--mono);font-size:.72rem;color:var(--teal);margin:0 0 .8rem}
+#toc .g{color:var(--navy);font-weight:700;margin:1rem 0 .25rem;font-size:.8rem}
+#toc a{display:block;color:var(--soft);text-decoration:none;border-left:2px solid var(--rule);padding:.16rem 0 .16rem .6rem;margin:.06rem 0}
+#toc a:hover{color:var(--teal);border-left-color:var(--teal)}
+#toc a.cur{color:var(--navy);border-left-color:var(--navy);background:var(--code);font-weight:600}
+#toc a .no{font-family:var(--mono);font-size:.68rem;color:var(--soft);margin-right:.4em}
+main#deck{min-width:0}
+body.hidenav .deckwrap{grid-template-columns:1fr}
+body.hidenav #toc{display:none}
+#navbtn{position:fixed;left:.7rem;bottom:.8rem;z-index:30;font-family:var(--sans);font-size:.74rem;color:var(--navy);background:#fff;border:1px solid var(--rule);border-radius:5px;padding:.28em .7em;cursor:pointer}
+#navbtn:hover{border-color:var(--teal);color:var(--teal)}
+@media (min-width:1000px){#navbtn{display:none}}
+#toc .tochead{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:0 0 .8rem}
+#toc .tochead .navhead{margin:0}
+#tocfold{font-family:var(--mono);font-size:.85rem;color:var(--soft);background:none;border:1px solid var(--rule);border-radius:4px;padding:.02em .5em;cursor:pointer;line-height:1.4}
+#tocfold:hover{color:var(--teal);border-color:var(--teal)}
+#tocrail{display:none;position:fixed;left:0;top:0;bottom:0;width:26px;z-index:25;background:#fff;border-right:1px solid var(--rule);cursor:pointer;align-items:center;justify-content:center}
+#tocrail span{writing-mode:vertical-rl;font-family:var(--mono);font-size:.68rem;color:var(--soft);letter-spacing:.35em}
+#tocrail:hover span{color:var(--teal)}
+body.hidenav #tocrail{display:flex}
+@media (max-width:999px){#tocrail{display:none!important}}
+@media (max-width:999px){
+  .deckwrap{grid-template-columns:1fr}
+  #toc{position:fixed;left:0;top:0;bottom:0;width:min(78vw,300px);height:auto;z-index:20;transform:translateX(-100%);box-shadow:4px 0 18px rgba(27,58,92,.15)}
+  body.shownav #toc{transform:none}
+}
+@media (prefers-reduced-motion:no-preference){#toc{transition:transform .18s ease}}
+.slide{position:relative;display:none;min-height:100vh;padding:5vh 5vw;flex-direction:column;justify-content:center}
+.tmark{position:absolute;top:2.4vh;right:5vw;margin:0;font-family:var(--mono);font-size:.7rem;letter-spacing:.04em;color:var(--soft);opacity:.75}
+.slide.on{display:flex}
+.inner{max-width:1020px;width:100%;margin:0 auto}
+h1,h2{font-family:var(--serif);color:var(--navy);line-height:1.3;margin:0 0 .6em}
+h1{font-size:2.2em}
+h2{font-size:1.55em}
+h3{font-size:1.05em;color:var(--navy);margin:1.1em 0 .35em}
+p{margin:0 0 .7em}
+ul,ol{margin:.2em 0 .8em;padding-left:1.3em}
+li{margin:.34em 0}
+strong{color:var(--navy)}
+em{font-style:normal;color:var(--teal)}
+.dim{color:var(--soft)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code);padding:.06em .32em;border-radius:3px}
+.term{background:var(--tbg);color:var(--tink);font-family:var(--mono);font-size:.8em;line-height:1.75;border-radius:8px;padding:.8em 1em;overflow-x:auto;white-space:pre;margin:.6em 0 .9em}
+.term .p{color:#6FB3AE}.term .c{color:var(--tdim)}.term .o{color:#B9C9D4}
+.term .mk{font-size:.78em;border-radius:3px;padding:0 .5em;margin-left:.6em;background:var(--amber);color:#182530}
+.term .mk.bad{background:var(--wine);color:#fff}
+table{border-collapse:collapse;width:100%;font-size:.82em;line-height:1.55;margin:.5em 0 .9em}
+th{text-align:left;color:var(--navy);border-bottom:2px solid var(--navy);padding:.4em .55em}
+td{padding:.42em .55em;border-bottom:1px solid var(--rule);vertical-align:top}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:2.2em}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.mark{border-left:5px solid var(--teal);background:#fff;border:1px solid var(--rule);border-left-width:5px;border-radius:0 6px 6px 0;padding:.6em 1em;margin:.8em 0}
+.mark.warn{border-left-color:var(--wine);background:#FBF3F5}
+.kicker{font-size:.78em;color:var(--teal);margin:0 0 .9em}
+.big{font-family:var(--serif);font-size:1.5em;color:var(--navy);line-height:1.5;margin:.2em 0 .6em}
+.cover h1{font-size:2.7em;margin:.25em 0 .3em}
+.cover .line{width:4.5em;height:4px;background:var(--teal);margin:1.2em 0 1.4em}
+.exno{display:inline-block;font-family:var(--mono);font-size:.72em;color:#fff;background:var(--amber);border-radius:4px;padding:.12em .6em;margin-bottom:.7em}
+.fig{background:#fff;border:1px solid var(--rule);border-radius:8px;padding:.7em .9em;margin:.5em 0 .9em}
+.fig svg{display:block;width:100%;height:auto}
+.fig text{font-family:var(--sans)}
+.fig .t1{font-size:15px;font-weight:700;fill:var(--navy)}
+.fig .t2{font-size:12.5px;fill:var(--soft)}
+.fig .t3{font-size:13px;fill:var(--ink)}
+.fig .mo{font-family:var(--mono);font-size:12.5px;fill:var(--ink)}
+.fig .bx{fill:#fff;stroke:var(--rule);stroke-width:1.5}
+.fig .bx.n{stroke:var(--navy);stroke-width:2}
+.fig .bx.t{stroke:var(--teal);stroke-width:2}
+.fig .bx.a{stroke:var(--amber);stroke-width:2}
+.fig .bx.w{stroke:var(--wine);stroke-width:2}
+.fig .bx.g{fill:var(--code);stroke:var(--rule);stroke-width:1}
+.fig .pnl{fill:none;stroke:var(--rule);stroke-width:1.5;stroke-dasharray:6 5}
+.fig .dv{stroke:var(--rule);stroke-width:1}
+.fig .ln{fill:none;stroke:var(--soft);stroke-width:1.6;marker-end:url(#ar)}
+.fig .ln.t{stroke:var(--teal);marker-end:url(#art)}
+.fig .ln.a{stroke:var(--amber);marker-end:url(#ara)}
+.fig .ln.w{stroke:var(--wine);marker-end:url(#arw)}
+.fig .ln.d{stroke-dasharray:6 5}
+@media print{.fig{break-inside:avoid}}
+.hud{position:fixed;right:1.1rem;bottom:.9rem;font-family:var(--mono);font-size:.72rem;color:var(--soft);user-select:none}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:.9rem;font-size:.7rem;color:var(--soft);opacity:.8}
+@media print{
+  body{font-size:15px}
+  .slide{display:flex!important;min-height:auto;page-break-after:always;padding:2.2em 2.4em}
+  .tmark{top:.9em;right:2.4em}
+  .hud,.hint,#toc,#navbtn,#tocrail{display:none}
+  .deckwrap{display:block}
+  .term{white-space:pre-wrap}
+}
+</style>
+</head>
+<body>
+<svg id="figdefs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute"><defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5A6873"/></marker>
+<marker id="art" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2A7F7A"/></marker>
+<marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B5761B"/></marker>
+<marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#A8425E"/></marker>
+</defs></svg>
+<div class="deckwrap">
+<nav id="toc" aria-label="课件目录"><div class="tochead"><p class="navhead">AIAE202 · 第 2 周</p><button id="tocfold" type="button" aria-label="收起目录" title="收起目录">«</button></div><div id="tocbody"></div></nav>
+<div id="tocrail" role="button" tabindex="0" aria-label="展开目录" title="展开目录"><span>目 录</span></div>
+<main id="deck">
+
+<!-- 1 封面 -->
+<section class="slide cover on" data-group="封面" data-nav="封面"><p class="tmark">0–1 min</p><div class="inner">
+  <p class="kicker">AIAE202 Agentic AI 开发实践（Agentic AI 开发工程师微专业 · 课程四）</p>
+  <h1>探索智能体框架</h1>
+  <div class="line"></div>
+  <p class="dim">第 2 周 · 线上授课 90 分钟</p>
+</div></section>
+
+<!-- 2 今天讲这些 -->
+<section class="slide" data-group="回顾" data-nav="今天讲这些"><p class="tmark">1–2 min</p><div class="inner">
+  <h2>今天讲这些</h2>
+  <ul style="font-size:1.1em">
+    <li>理论：框架到底替你做了什么；全景看两个方向：怎么搭（产品、低代码、代码框架），谁定下一步（你还是模型）</li>
+    <li>三张架构图：LangChain、LangGraph、OpenClaw——看清"谁决定下一步"</li>
+    <li>演示：一个记得住对话的智能体</li>
+    <li>代码细节：四块积木一块一块拆开看；记忆、线程、带状态的工具——三个容易混的东西</li>
+    <li>动手练习：换线程、亲手放三个 bug、模拟两个用户</li>
+    <li>作业</li>
+  </ul>
+</div></section>
+
+<!-- 3 框架替你做什么 -->
+<section class="slide" data-group="理论：框架与生态" data-nav="框架替你做什么"><p class="tmark">2–4 min</p><div class="inner">
+  <h2>先说清楚：框架替你做了什么</h2>
+  <div class="cols" style="grid-template-columns:.8fr 1.2fr;gap:1.6em;align-items:start">
+  <div>
+  <p style="margin-top:0">上周 <code>create_agent</code> 一行就出来一个智能体。不用框架、裸用 <code>openai</code> 包，右边这些都得自己写：</p>
+  <ol style="font-size:.9em">
+    <li>把函数<strong>手写成 JSON 签名</strong>发给模型</li>
+    <li>解析 <code>tool_calls</code>，<code>json.loads</code> 参数，<strong>找函数执行</strong></li>
+    <li>结果按 <code>role="tool"</code> 带上 <code>tool_call_id</code> <strong>追加回去</strong></li>
+    <li><strong>写循环</strong>，直到模型不再调工具，还要防无限调</li>
+    <li>多轮对话，<strong>自己保存、回放整段历史</strong></li>
+  </ol>
+  </div>
+  <div class="term" style="font-size:.66em;line-height:1.6;margin:0"><span class="o">tools = [{"type": "function", "function": {  </span><span class="c"># ①</span>
+<span class="o">    "name": "check_availability",
+    "description": "Check if a destination is bookable.",
+    "parameters": {"type": "object",
+        "properties": {"destination": {"type": "string"}},
+        "required": ["destination"]}}}]
+
+history = [{"role": "user", "content": question}]  </span><span class="c"># ⑤</span>
+<span class="o">for _ in range(10):                                </span><span class="c"># ④</span>
+<span class="o">    msg = client.chat.completions.create(
+        model=MODEL, messages=history,
+        tools=tools).choices[0].message
+    history.append(msg)
+    if not msg.tool_calls:
+        break
+    for call in msg.tool_calls:                    </span><span class="c"># ②</span>
+<span class="o">        args = json.loads(call.function.arguments)
+        history.append({"role": "tool",            </span><span class="c"># ③</span>
+<span class="o">            "tool_call_id": call.id,
+            "content": check_availability(**args)})
+print(msg.content)</span></div>
+  </div>
+  <p style="margin-top:.9em">每一条都不难，但每一条都会出错。右边二十行，用框架就是 <code>create_agent(llm, tools=[check_availability])</code> 一行——<strong>框架把这些共性的事标准化了</strong>，你只管写工具、提示词、流程。今天先看它在生态里站在哪、里面长什么样，再看演示，最后拆成四块积木对到代码上。</p>
+</div></section>
+
+<!-- 4 全景 · 搭法与谁定下一步 -->
+<section class="slide" data-group="理论：框架与生态" data-nav="全景 · 搭法与谁定下一步"><p class="tmark">4–7 min</p><div class="inner">
+  <h2>先看全景：三种搭法、一条轴、一个底座</h2>
+  <div class="fig"><svg viewBox="0 0 1000 420" role="img" aria-label="智能体生态全景：三种搭法乘以谁决定下一步，下面是互通协议底座">
+    <text class="t1" x="40" y="30" text-anchor="start">怎么搭 ↓</text>
+    <text class="t2" x="40" y="50" text-anchor="start">谁定下一步 →</text>
+    <rect class="bx g" x="190" y="8" width="396" height="50" rx="6"/>
+    <text class="t1" x="208" y="30" text-anchor="start">你定流程</text>
+    <text class="t2" x="208" y="49" text-anchor="start">步骤写死，模型只在某一步里干活</text>
+    <rect class="bx g" x="594" y="8" width="386" height="50" rx="6"/>
+    <text class="t1" x="612" y="30" text-anchor="start">模型自己定</text>
+    <text class="t2" x="612" y="49" text-anchor="start">给目标和工具，它自己挑、自己决定下一步</text>
+
+    <rect class="bx" x="20" y="66" width="960" height="80" rx="6"/>
+    <text class="t1" x="40" y="98" text-anchor="start">① 直接用产品</text>
+    <text class="t2" x="40" y="120" text-anchor="start">零代码</text>
+    <line class="dv" x1="190" y1="66" x2="190" y2="146"/>
+    <line class="dv" x1="590" y1="66" x2="590" y2="146"/>
+    <text class="t2" x="390" y="102" text-anchor="middle">产品替你定流程</text>
+    <text class="t2" x="390" y="122" text-anchor="middle">你只能配提示词、资料和技能</text>
+    <text class="t3" x="608" y="90" text-anchor="start">ChatGPT GPTs · Gemini Gems · Claude Projects</text>
+    <text class="t3" x="608" y="110" text-anchor="start">OpenClaw · Claude Code / Codex（跑在你自己机器上）</text>
+    <text class="t2" x="608" y="132" text-anchor="start">装好配好就能用；想嵌进自己的系统就难了</text>
+
+    <rect class="bx" x="20" y="154" width="960" height="80" rx="6"/>
+    <text class="t1" x="40" y="186" text-anchor="start">② 低代码平台</text>
+    <text class="t2" x="40" y="208" text-anchor="start">在网页上拖</text>
+    <line class="dv" x1="190" y1="154" x2="190" y2="234"/>
+    <line class="dv" x1="590" y1="154" x2="590" y2="234"/>
+    <text class="t3" x="208" y="178" text-anchor="start">Dify / 扣子 的工作流 · n8n</text>
+    <text class="t3" x="208" y="198" text-anchor="start">FastGPT · Flowise</text>
+    <text class="t2" x="208" y="220" text-anchor="start">画布上拖节点：流程是你画的，只是画在网页上</text>
+    <text class="t3" x="608" y="178" text-anchor="start">Dify / 扣子 的 Agent 应用</text>
+    <text class="t3" x="608" y="198" text-anchor="start">各家云平台的 Agent Builder</text>
+    <text class="t2" x="608" y="220" text-anchor="start">挂上工具和知识库，每一步调什么让模型挑</text>
+
+    <rect class="bx n" x="20" y="242" width="960" height="80" rx="6"/>
+    <text class="t1" x="40" y="274" text-anchor="start">③ 代码框架</text>
+    <text class="t2" x="40" y="296" text-anchor="start">这门课站在这一行</text>
+    <line class="dv" x1="190" y1="242" x2="190" y2="322"/>
+    <line class="dv" x1="590" y1="242" x2="590" y2="322"/>
+    <text class="t3" x="208" y="266" text-anchor="start">LangGraph StateGraph · CrewAI Flows</text>
+    <text class="t3" x="208" y="286" text-anchor="start">Pydantic Graph</text>
+    <text class="t2" x="208" y="308" text-anchor="start">流程写成代码，能进 git、能测、能回放——第 8 周</text>
+    <text class="t3" x="608" y="266" text-anchor="start">LangChain create_agent · OpenAI Agents SDK</text>
+    <text class="t3" x="608" y="286" text-anchor="start">Pydantic AI · smolagents</text>
+    <text class="t2" x="608" y="308" text-anchor="start">工具写成代码，循环交给框架——今天的演示</text>
+
+    <rect class="bx t" x="20" y="330" width="960" height="58" rx="6"/>
+    <text class="t1" x="40" y="356" text-anchor="start">底座 · 互通协议</text>
+    <text class="t2" x="40" y="376" text-anchor="start">上面每一格都能接</text>
+    <line class="dv" x1="190" y1="330" x2="190" y2="388"/>
+    <text class="t3" x="208" y="356" text-anchor="start">MCP（智能体 ↔ 工具）· A2A（智能体 ↔ 智能体）· OpenAI 兼容的模型接口</text>
+    <text class="t2" x="208" y="376" text-anchor="start">工具按协议写一次，哪一行、哪一列都能接——所以选型不等于把自己锁死</text>
+
+    <text class="t2" x="20" y="412" text-anchor="start">↓ 越往下：你能控制的越多，要自己负责的也越多</text>
+    <text class="t2" x="980" y="412" text-anchor="end">→ 越往右：交给模型决定的越多，越难说清它为什么这么做</text>
+  </svg></div>
+  <p>两个方向别混，同一个平台两边都能做：Dify 有工作流也有 Agent，LangChain 有 <code>StateGraph</code> 也有 <code>create_agent</code>。选型问两句：<strong>产品能不能覆盖</strong>——能就别写代码，要嵌进自己的系统、要版本控制和测试才往下走；<strong>这一步能不能交给模型</strong>——决定放左边还是右边。</p>
+  <p class="dim">这门课主要站在第③行。本周两个作业：Dify 在第②行，OpenClaw 在第①行最右边——常见组合是先用 Dify / 扣子验证想法，通过了再用 LangGraph 重写成能上线的版本。</p>
+</div></section>
+
+<!-- 5 其他框架怎么想 -->
+<section class="slide" data-group="理论：框架与生态" data-nav="其他框架怎么想"><p class="tmark">7–10 min</p><div class="inner">
+  <h2>LangChain 不是唯一选择，看看别人怎么想</h2>
+  <table>
+    <tr><th>框架</th><th>编排风格</th><th>人工确认环节</th><th>许可</th></tr>
+    <tr><td><strong>LangGraph</strong>（配合 LangChain）</td><td>图：带类型的状态、节点、边；常见循环用 <code>create_agent</code></td><td>任意节点 <code>interrupt()</code>；工具审批用 <code>HumanInTheLoopMiddleware</code></td><td>MIT</td></tr>
+    <tr><td><strong>CrewAI</strong></td><td>基于角色的团队：智能体、任务、顺序或层级流程</td><td>任务上 <code>human_input=True</code></td><td>MIT</td></tr>
+    <tr><td><strong>Pydantic AI</strong></td><td>Pydantic 模型定义的带类型智能体；Pydantic Graph 状态机</td><td>延迟执行的工具调用，运行前审批</td><td>MIT</td></tr>
+    <tr><td><strong>OpenAI Agents SDK</strong></td><td>智能体、交接、输入输出护栏</td><td>工具上 <code>needs_approval=True</code></td><td>MIT</td></tr>
+    <tr><td><strong>smolagents</strong></td><td>模型写出调用工具的 Python 代码去执行</td><td>步骤回调和 <code>interrupt()</code></td><td>Apache-2.0</td></tr>
+  </table>
+  <p>三个观察：<strong>图、角色，还是代码</strong>——LangGraph 要你把流程画出来，CrewAI 要你描述一支团队，smolagents 让模型把计划写成代码；<strong>结构化输出已是标配</strong>；<strong>人工确认都需要持久化状态</strong>——暂停等审批、稍后恢复，中间那段必须存在某处。LangGraph 把这件事做成了显式的检查点存储器。</p>
+  <p class="dim">光看表格记不住。下面三张架构图一张一张拆开看：LangChain 的循环、LangGraph 的图，再加一张自主执行那一侧的 OpenClaw，最后回来对比。</p>
+</div></section>
+
+<!-- 6 架构图 · LangChain -->
+<section class="slide" data-group="理论：框架与生态" data-nav="架构图 · LangChain"><p class="tmark">10–12 min</p><div class="inner">
+  <h2>架构图一：<code>create_agent</code> 里面长什么样</h2>
+  <div class="fig"><svg viewBox="0 0 1000 400" role="img" aria-label="LangChain create_agent 运行时架构图">
+    <text class="t2" x="140" y="30" text-anchor="middle">你写的</text>
+    <text class="t2" x="530" y="30" text-anchor="middle">create_agent 编译出来的运行时（本质是一张 LangGraph 图）</text>
+    <text class="t2" x="890" y="30" text-anchor="middle">供应商</text>
+
+    <rect class="bx" x="20" y="50" width="240" height="62" rx="6"/>
+    <text class="mo" x="140" y="76" text-anchor="middle">@tool 函数 × N</text>
+    <text class="t2" x="140" y="97" text-anchor="middle">docstring + Annotated → schema</text>
+
+    <rect class="bx" x="20" y="128" width="240" height="62" rx="6"/>
+    <text class="mo" x="140" y="154" text-anchor="middle">system_prompt=...</text>
+    <text class="t2" x="140" y="175" text-anchor="middle">点名有哪些工具、写清边界</text>
+
+    <rect class="bx" x="20" y="206" width="240" height="62" rx="6"/>
+    <text class="mo" x="140" y="232" text-anchor="middle">ChatOpenAI(...)</text>
+    <text class="t2" x="140" y="253" text-anchor="middle">base_url / api_key / model</text>
+
+    <path class="ln" d="M262,159 L296,159"/>
+
+    <rect class="pnl" x="300" y="44" width="460" height="250" rx="8"/>
+
+    <rect class="bx" x="320" y="88" width="170" height="76" rx="6"/>
+    <text class="t1" x="405" y="118" text-anchor="middle">tools 节点</text>
+    <text class="t2" x="405" y="140" text-anchor="middle">执行你的函数、回填结果</text>
+
+    <rect class="bx n" x="570" y="88" width="170" height="76" rx="6"/>
+    <text class="t1" x="655" y="118" text-anchor="middle">model 节点</text>
+    <text class="t2" x="655" y="140" text-anchor="middle">历史 + 工具 schema</text>
+
+    <path class="ln" d="M568,112 L494,112"/>
+    <text class="t2" x="531" y="104" text-anchor="middle">tool_calls</text>
+    <path class="ln" d="M492,146 L566,146"/>
+    <text class="t2" x="529" y="166" text-anchor="middle">ToolMessage</text>
+
+    <path class="ln t" d="M655,164 L655,206"/>
+    <text class="t2" x="560" y="190" text-anchor="end">模型不再要求调工具时</text>
+    <rect class="bx t" x="570" y="210" width="170" height="58" rx="6"/>
+    <text class="t1" x="655" y="238" text-anchor="middle">返回最终回复</text>
+    <text class="mo" x="655" y="258" text-anchor="middle">result["messages"]</text>
+
+    <rect class="bx" x="800" y="88" width="180" height="76" rx="6"/>
+    <text class="t1" x="890" y="118" text-anchor="middle">模型服务</text>
+    <text class="t2" x="890" y="140" text-anchor="middle">兼容 OpenAI 协议即可</text>
+    <path class="ln" marker-start="url(#ar)" d="M746,128 L796,128"/>
+    <text class="t2" x="771" y="78" text-anchor="middle">请求 / 响应</text>
+
+    <path class="ln a" d="M420,296 L420,318"/>
+    <text class="t2" x="430" y="313" text-anchor="start">存</text>
+    <path class="ln a" d="M640,318 L640,298"/>
+    <text class="t2" x="650" y="313" text-anchor="start">回放</text>
+    <rect class="bx a" x="300" y="322" width="680" height="56" rx="6"/>
+    <text class="t1" x="640" y="348" text-anchor="middle">checkpointer（InMemorySaver）：每一步之后按 thread_id 存一份消息历史</text>
+    <text class="t2" x="640" y="368" text-anchor="middle">同一个 thread_id → 下一轮把整段历史原样回放给模型</text>
+  </svg></div>
+  <p>框架替你做的那几件事，拼起来就是这张图。左边三样是<strong>你写的</strong>，中间那一圈是<strong>框架替你跑的</strong>：问模型 → 模型要求调工具 → 执行 → 结果回填 → 再问，直到模型只回纯文本才退出循环。上周那行 <code>create_agent(llm, tools=[...])</code>，编译出来就是这张图。</p>
+  <p>两个细节记一下：工具的 schema 是<strong>发给模型看的</strong>，函数本身在 <code>tools</code> 节点里执行——模型从头到尾没碰过你的代码，它只是提了个要求；<code>checkpointer</code> 挂在整张图下面，它存的是<strong>消息历史</strong>，所以下一轮那几条 <code>ToolMessage</code> 会原样回来，这就是"记忆"的全部。</p>
+</div></section>
+
+<!-- 7 架构图 · LangGraph -->
+<section class="slide" data-group="理论：框架与生态" data-nav="架构图 · LangGraph"><p class="tmark">12–14 min</p><div class="inner">
+  <h2>架构图二：LangGraph 把流程画出来</h2>
+  <div class="fig"><svg viewBox="0 0 1000 478" role="img" aria-label="LangGraph StateGraph 架构图：以旅行预订为例，标出哪些节点调用 LLM">
+    <rect class="bx n" x="20" y="10" width="960" height="80" rx="6"/>
+    <text class="t1" x="500" y="34" text-anchor="middle">State：整张图共用的一块白板（TypedDict）</text>
+    <text class="mo" x="500" y="56" text-anchor="middle">destination="成都" · date=None · budget=8000 · approved=False · messages=[…]</text>
+    <text class="t2" x="500" y="77" text-anchor="middle">每个节点读它、只返回要改的字段；下一步去哪，也是看它决定</text>
+
+    <rect class="bx g" x="20" y="211" width="70" height="42" rx="21"/>
+    <text class="mo" x="55" y="237" text-anchor="middle">START</text>
+    <path class="ln" d="M92,232 L118,232"/>
+
+    <rect class="bx t" x="122" y="194" width="170" height="76" rx="6"/>
+    <rect x="252" y="182" width="50" height="22" rx="11" style="fill:var(--teal)"/>
+    <text x="277" y="197" text-anchor="middle" style="fill:#fff;font-size:12px;font-weight:700">LLM</text>
+    <text class="t1" x="207" y="225" text-anchor="middle">① 抽取需求</text>
+    <text class="t2" x="207" y="247" text-anchor="middle">一句话 → State 里的字段</text>
+    <path class="ln" d="M294,232 L318,232"/>
+
+    <polygon class="bx a" points="380,188 440,232 380,276 320,232"/>
+    <text class="mo" x="380" y="229" text-anchor="middle">route()</text>
+    <text class="t2" x="380" y="248" text-anchor="middle">你写的 if</text>
+
+    <path class="ln" d="M380,188 C380,142 420,132 494,132"/>
+    <text class="t2" x="438" y="120" text-anchor="middle" style="fill:var(--amber)">日期齐、金额小</text>
+    <rect class="bx" x="498" y="100" width="170" height="64" rx="6"/>
+    <text class="t1" x="583" y="127" text-anchor="middle">② 查可订性</text>
+    <text class="t2" x="583" y="148" text-anchor="middle">纯代码：查库 / 调工具</text>
+
+    <path class="ln" d="M380,276 C380,322 420,332 494,332"/>
+    <text class="t2" x="440" y="358" text-anchor="middle" style="fill:var(--amber)">金额超过 5000</text>
+    <rect class="bx w" x="498" y="300" width="170" height="64" rx="6"/>
+    <text class="t1" x="583" y="327" text-anchor="middle">③ 人工审批</text>
+    <text class="mo" x="583" y="348" text-anchor="middle">interrupt() 停住</text>
+
+    <path class="ln d" d="M348,254 C330,318 222,318 207,274"/>
+    <text class="t2" x="268" y="328" text-anchor="middle" style="fill:var(--amber)">缺日期：回到 ① 再问</text>
+
+    <path class="ln" d="M670,132 C712,132 716,178 732,200"/>
+    <path class="ln" d="M670,332 C712,332 716,286 732,264"/>
+    <rect class="bx t" x="734" y="194" width="150" height="76" rx="6"/>
+    <rect x="844" y="182" width="50" height="22" rx="11" style="fill:var(--teal)"/>
+    <text x="869" y="197" text-anchor="middle" style="fill:#fff;font-size:12px;font-weight:700">LLM</text>
+    <text class="t1" x="809" y="225" text-anchor="middle">④ 生成回复</text>
+    <text class="t2" x="809" y="247" text-anchor="middle">把结果写成人话</text>
+    <path class="ln" d="M886,232 L906,232"/>
+    <rect class="bx g" x="910" y="211" width="70" height="42" rx="21"/>
+    <text class="mo" x="945" y="237" text-anchor="middle">END</text>
+
+    <rect x="20" y="382" width="44" height="20" rx="10" style="fill:var(--teal)"/>
+    <text x="42" y="396" text-anchor="middle" style="fill:#fff;font-size:11px;font-weight:700">LLM</text>
+    <text class="t3" x="72" y="397">节点里调了模型（① ④）</text>
+    <rect class="bx" x="262" y="382" width="30" height="20" rx="3"/>
+    <text class="t3" x="300" y="397">纯代码节点（②）</text>
+    <polygon class="bx a" points="468,380 482,392 468,404 454,392"/>
+    <text class="t3" x="490" y="397">条件边：你写的 if，决定下一步</text>
+    <rect class="bx w" x="752" y="382" width="30" height="20" rx="3"/>
+    <text class="t3" x="790" y="397">停下等人点头</text>
+
+    <rect class="bx a" x="20" y="418" width="960" height="52" rx="6"/>
+    <text class="t1" x="500" y="440" text-anchor="middle">checkpointer：每走完一步存一次 State，按 thread_id 分线程</text>
+    <text class="t2" x="500" y="460" text-anchor="middle">所以 ③ 停住之后，人隔几小时再点"批准"，图也能从 ③ 原地接着跑</text>
+  </svg></div>
+  <p><strong>LLM 在节点里面</strong>：① ④ 的函数体里写了 <code>llm.invoke(...)</code>，② ③ 一行模型调用都没有，图本身只认函数。<strong>下一步去哪由边决定</strong>：<code>route()</code> 是你写的 if，读 State 里的 <code>date</code>、<code>budget</code> 选路；模型只能通过 ① 写进 State 的字段间接影响路线。<strong>State 是共用白板，checkpointer 给它存档</strong>，所以 <code>interrupt()</code> 停得住、接得上。</p>
+  <p class="dim">回看上一张图：<code>create_agent</code> 就是这张图的特例——只有 model、tools 两个节点，条件边只问"最后一条 <code>AIMessage</code> 有没有 <code>tool_calls</code>"。第 8 周换成 <code>StateGraph</code> 时，工具、模型客户端、检查点存储器一行都不用改。</p>
+</div></section>
+
+<!-- 8 架构图 · OpenClaw -->
+<section class="slide" data-group="理论：框架与生态" data-nav="架构图 · OpenClaw"><p class="tmark">14–16 min</p><div class="inner">
+  <h2>架构图三：自主执行那一侧，以 OpenClaw 为例</h2>
+  <div class="fig"><svg viewBox="0 0 1000 470" role="img" aria-label="OpenClaw 自主执行型智能体架构图">
+    <rect class="bx g" x="20" y="14" width="150" height="44" rx="6"/><text class="t3" x="95" y="42" text-anchor="middle">WhatsApp</text>
+    <rect class="bx g" x="180" y="14" width="150" height="44" rx="6"/><text class="t3" x="255" y="42" text-anchor="middle">Telegram</text>
+    <rect class="bx g" x="340" y="14" width="150" height="44" rx="6"/><text class="t3" x="415" y="42" text-anchor="middle">Discord</text>
+    <rect class="bx g" x="500" y="14" width="150" height="44" rx="6"/><text class="t3" x="575" y="42" text-anchor="middle">iMessage</text>
+    <rect class="bx g" x="660" y="14" width="150" height="44" rx="6"/><text class="t3" x="735" y="42" text-anchor="middle">Slack / Teams</text>
+    <rect class="bx g" x="820" y="14" width="160" height="44" rx="6"/><text class="t3" x="900" y="42" text-anchor="middle">…20+ 个渠道</text>
+
+    <path class="ln" d="M500,58 L500,92"/>
+    <text class="t2" x="514" y="80" text-anchor="start">渠道适配器把各平台消息统一成 UnifiedMessage</text>
+
+    <rect class="bx n" x="20" y="96" width="960" height="88" rx="6"/>
+    <text class="t1" x="40" y="124" text-anchor="start">Gateway ｜ 跑在你自己电脑上的常驻进程（默认 :18789），控制面 + 消息总线</text>
+    <text class="t2" x="40" y="148" text-anchor="start">鉴权 · 会话键 workspace:channel:userId · 每个会话一条 Lane Queue，任务串行执行，天然没有竞态</text>
+    <text class="t2" x="40" y="170" text-anchor="start">命令审批（危险操作要你先点头）· 已连接节点的注册表 · 浏览器控制台</text>
+
+    <path class="ln t" d="M300,184 L300,210"/>
+    <text class="t2" x="314" y="203" text-anchor="start">一个会话 = 一个 Agent + 一份自己的记忆</text>
+
+    <rect class="bx t" x="20" y="214" width="580" height="142" rx="6"/>
+    <text class="t1" x="38" y="242" text-anchor="start">Agent Runtime ｜ 自主循环</text>
+    <text class="t2" x="38" y="264" text-anchor="start">给个目标 → 自己规划 → 挑工具 → 看结果 → 再决定下一步（没有预先画好的图）</text>
+    <rect class="bx g" x="36" y="282" width="172" height="58" rx="6"/>
+    <text class="t1" x="122" y="306" text-anchor="middle">Skills</text>
+    <text class="t2" x="122" y="326" text-anchor="middle">按需加载的 md 指令</text>
+    <rect class="bx g" x="220" y="282" width="172" height="58" rx="6"/>
+    <text class="t1" x="306" y="306" text-anchor="middle">Tools / MCP</text>
+    <text class="t2" x="306" y="326" text-anchor="middle">命令、API、外部服务</text>
+    <rect class="bx g" x="404" y="282" width="178" height="58" rx="6"/>
+    <text class="t1" x="493" y="306" text-anchor="middle">子进程 / 子智能体</text>
+    <text class="t2" x="493" y="326" text-anchor="middle">长任务单独跑一份</text>
+
+    <path class="ln" marker-start="url(#ar)" d="M602,244 L626,244"/>
+    <rect class="bx" x="630" y="214" width="350" height="62" rx="6"/>
+    <text class="t1" x="805" y="242" text-anchor="middle">LLM Provider</text>
+    <text class="t2" x="805" y="262" text-anchor="middle">Claude 或其他模型，云端、本地都行</text>
+
+    <path class="ln a" marker-start="url(#ara)" d="M602,330 L626,330"/>
+    <rect class="bx a" x="630" y="294" width="350" height="124" rx="6"/>
+    <text class="t1" x="650" y="320" text-anchor="start">Memory / Workspace</text>
+    <text class="t2" x="650" y="344" text-anchor="start">~/.openclaw 下的一堆纯文本文件</text>
+    <text class="t2" x="650" y="366" text-anchor="start">AGENTS.md · USER.md · SOUL.md · HEARTBEAT.md</text>
+    <text class="t2" x="650" y="388" text-anchor="start">会话历史 JSONL + SQLite 向量／关键词检索</text>
+    <text class="t2" x="650" y="410" text-anchor="start">文件即记忆：能直接打开看，也能手改</text>
+
+    <path class="ln w" d="M300,374 L300,358"/>
+    <rect class="bx w" x="20" y="376" width="580" height="58" rx="6"/>
+    <text class="t1" x="38" y="402" text-anchor="start">Heartbeat ｜ 没人说话它也会自己干活</text>
+    <text class="t2" x="38" y="424" text-anchor="start">默认每 30 分钟读一遍 HEARTBEAT.md：查邮件、看日程、跑总结</text>
+
+    <text class="t2" x="20" y="458" text-anchor="start">回复沿原路返回：Agent → Gateway → 对应的渠道适配器 → 你的聊天窗口</text>
+  </svg></div>
+  <p>对照上一张图，差别一眼就看出来：<strong>这里没有图</strong>——没有节点、没有边，Agent 拿到目标自己决定下一步；流程写在 Skills 和提示词里，不在代码结构里。</p>
+  <p>它用三样东西兜住这种不确定性：<strong>一个会话一条串行队列</strong>、<strong>危险操作要人点头</strong>（审批走 Gateway）、<strong>记忆是能打开看的纯文本</strong>——下一页那张对比表里写的"企业合规需要增强"，补的就是这些。</p>
+  <div class="mark"><p style="margin:0">三张图盯住同一件事：<strong>谁决定下一步</strong>——框架写死的循环、你画的边，还是模型自己。</p></div>
+</div></section>
+
+<!-- 9 两条技术路线对比 -->
+<section class="slide" data-group="理论：框架与生态" data-nav="两条技术路线对比"><p class="tmark">16–19 min</p><div class="inner">
+  <h2>两条技术路线：图式编排，还是自主执行</h2>
+  <p class="kicker">三张图看完，往上退一步：它们背后其实只有两种想法。</p>
+  <table>
+    <tr><th></th><th>LangChain / LangGraph（图式工作流编排）</th><th>OpenClaw 这一类（自主执行型）</th></tr>
+    <tr><td><strong>核心思想</strong></td><td>图式工作流编排</td><td>自主执行型 Agent</td></tr>
+    <tr><td><strong>控制方式</strong></td><td>开发者设计流程</td><td>Agent 自主规划</td></tr>
+    <tr><td><strong>重点</strong></td><td>可靠、可控、可调试</td><td>自治、任务完成能力</td></tr>
+    <tr><td><strong>适合</strong></td><td>企业生产系统</td><td>个人助手 / 复杂任务自动化</td></tr>
+    <tr><td><strong>流程</strong></td><td>显式 Graph</td><td>隐式 Planner</td></tr>
+    <tr><td><strong>状态</strong></td><td>State 管理</td><td>Memory + Context</td></tr>
+    <tr><td><strong>工具调用</strong></td><td>节点调用工具</td><td>Agent 自主选择工具</td></tr>
+    <tr><td><strong>企业合规</strong></td><td>较强</td><td>需要增强</td></tr>
+  </table>
+  <p>两边的差别只有一句话：<strong>流程是谁定的</strong>。左边是你把步骤画成图，模型只在节点里干活，所以每一步都能看、能测、能回放；右边是你给一个目标，模型自己拆任务、自己挑工具、自己决定下一步，能力上限高，但出了问题很难说清"它为什么这么做"。右边这一列，就是上一页那张 OpenClaw 架构图。</p>
+  <div class="mark"><p style="margin:0">这门课两条路都会碰到：<code>create_agent</code> 让模型自己选工具，已经是"自主"那一侧的最小版本；第 8 周的 <code>StateGraph</code> 则是"显式 Graph"那一侧。真正的取舍不在框架名字上，而在<strong>这一步能不能交给模型决定</strong>——能就交，不能就画进图里。</p></div>
+</div></section>
+
+<!-- 10 三个层次怎么选 -->
+<section class="slide" data-group="理论：框架与生态" data-nav="三个层次怎么选"><p class="tmark">19–21 min</p><div class="inner">
+  <h2>同一套技术栈里的三个层次，怎么选</h2>
+  <table>
+    <tr><th>方式</th><th>关注点</th><th>核心概念</th><th>用在</th></tr>
+    <tr><td>裸用 OpenAI 兼容 SDK</td><td>直接调模型</td><td>聊天补全、自己解析工具调用、自己写循环</td><td>单次调用、实验、完全自定义的循环</td></tr>
+    <tr><td>LangChain <code>create_agent</code></td><td>现成的智能体循环</td><td>聊天模型、工具、系统提示词、中间件、检查点存储器</td><td>工具调用、多轮对话——绝大多数智能体</td></tr>
+    <tr><td>LangGraph <code>StateGraph</code></td><td>显式工作流</td><td>带类型的状态、节点、边、<code>interrupt()</code></td><td>分支、并行、长时间等审批、多智能体</td></tr>
+  </table>
+  <p>它们不是竞争关系：<strong><code>create_agent</code> 本身就会编译成一张 LangGraph 的 <code>StateGraph</code></strong>。所以拿不准就从 <code>create_agent</code> 开始，等哪天步骤顺序、分支、审批需要"看得见、能测试"而不是交给模型自己决定，再把工具、模型客户端和检查点存储器原封不动搬进 <code>StateGraph</code>——第 8 周就干这个。</p>
+</div></section>
+
+<!-- 11 Demo 演示 -->
+<section class="slide" data-group="Demo 演示" data-nav="Demo 演示"><p class="tmark">21–22 min</p><div class="inner">
+  <h2 style="font-size:2em">Demo 演示：<br>一个记得住对话的旅行智能体</h2>
+</div></section>
+
+<!-- 12 盯三件事 -->
+<section class="slide" data-group="Demo 演示" data-nav="盯三件事"><p class="tmark">22–24 min</p><div class="inner">
+  <h2>看的时候，重点盯三件事</h2>
+  <ul style="font-size:1.1em">
+    <li>第二轮用户<strong>一个城市名都没提</strong>，模型凭什么知道哪些可订——看我把第二轮的 <code>result["messages"]</code> 打出来有几条；</li>
+    <li>我换一个 <code>thread_id</code> 再问同一句追问，它的回答<strong>差在哪</strong>；</li>
+    <li>流式那段，"让我先随机挑选一个目的地"和"恭喜！"之间<strong>那行 <code>===</code></strong> 是谁打的，第二轮抽到的目的地为什么保证和第一轮不同。</li>
+  </ul>
+</div></section>
+
+<!-- 13 刚才发生了什么 -->
+<section class="slide" data-group="Demo 演示" data-nav="刚才发生了什么"><p class="tmark">24–28 min</p><div class="inner">
+  <h2>刚才发生了什么——以及背后是什么</h2>
+  <table>
+    <tr><th>刚才的步骤</th><th>背后是什么</th><th>对应 notebook</th></tr>
+    <tr><td>建智能体时多传了 <code>checkpointer=InMemorySaver()</code></td><td>每一步之后按 <code>thread_id</code> 保存消息历史</td><td>单元 7，<code>create_agent</code></td></tr>
+    <tr><td>第一轮问五个城市，模型连发五次工具调用</td><td>工具调用循环在一次 <code>invoke</code> 里跑了两圈</td><td>单元 9，第一次 <code>invoke</code></td></tr>
+    <tr><td>第二轮问"暖和的"，它直接答了，没再调工具</td><td>五条 <code>ToolMessage</code> 被原样回放，模型已经有答案</td><td>单元 9，第二次 <code>invoke</code></td></tr>
+    <tr><td>打印第二轮的 <code>result["messages"]</code>，一共十条</td><td>历史包含第一轮全部消息，不只是这一轮的</td><td><code>result["messages"]</code></td></tr>
+    <tr><td>换 <code>thread_id</code> 再问追问，它自己挑了芭提雅、马尔代夫等五个地方重新去查</td><td>新线程没有历史，模型不知道前面那五个城市，只能从头来</td><td><code>{"configurable": {"thread_id": ...}}</code></td></tr>
+    <tr><td>流式两轮，第二轮换了目的地</td><td><code>langgraph_node</code> 区分模型和工具；<code>_last_destination</code> 排除上一次</td><td>单元 11，<code>astream</code></td></tr>
+  </table>
+  <p class="dim">右边两列就是接下来的代码细节：从模型客户端到流式，一个单元一个单元拆开看。</p>
+</div></section>
+
+<!-- 14 边看边记三样 -->
+<section class="slide" data-group="Demo 演示" data-nav="边看边记三样"><p class="tmark">28–29 min</p><div class="inner">
+  <h2>边看边记三样</h2>
+  <p>看演示的时候记下来，下节课开头带着来问：</p>
+  <ul style="font-size:1.1em">
+    <li>刚才<strong>完全没看懂</strong>的一步——比如第二轮那十条消息是从哪来的？</li>
+    <li>你觉得<strong>有点可疑</strong>的一步——比如它说三亚"属于热带海洋性气候，冬季温暖宜人"，这信息是工具给的还是它自己知道的？</li>
+    <li>你最想问的一个问题。</li>
+  </ul>
+  <p class="dim">没有标准答案，写真实感受。</p>
+</div></section>
+
+<!-- 15 四块积木 -->
+<section class="slide" data-group="代码细节" data-nav="四块积木"><p class="tmark">29–31 min</p><div class="inner">
+  <h2>四块积木，一层搭一层</h2>
+  <div class="term"><span class="o">ChatOpenAI  →  create_agent  →  tools
+                             →  checkpointer (thread)</span></div>
+  <table>
+    <tr><th>积木</th><th>它只管一件事</th><th>notebook 里</th></tr>
+    <tr><td><strong>模型客户端</strong></td><td>按 Chat Completions 格式发 HTTP 请求、解析回复，对循环和对话一无所知</td><td><code>ChatOpenAI(...)</code>，单元 2</td></tr>
+    <tr><td><strong>工具</strong></td><td>普通 Python 函数，docstring 和类型注解变成模型看到的 schema</td><td><code>@tool</code>，单元 5</td></tr>
+    <tr><td><strong>智能体</strong></td><td>跑工具调用循环：问模型 → 执行工具 → 回传 → 再问，直到出纯文本</td><td><code>create_agent(...)</code>，单元 7</td></tr>
+    <tr><td><strong>记忆（线程）</strong></td><td>每一步之后把消息历史存起来，以 <code>thread_id</code> 为键</td><td><code>checkpointer=InMemorySaver()</code>，单元 7、9</td></tr>
+  </table>
+  <p class="dim">前三块上周已经见过，今天重点是第四块，以及它和"工具自己带状态"的区别。</p>
+</div></section>
+
+<!-- 16 模型客户端只是配置 -->
+<section class="slide" data-group="代码细节" data-nav="模型客户端只是配置"><p class="tmark">31–34 min</p><div class="inner">
+  <h2>模型客户端：供应商是配置项，不是代码</h2>
+  <div class="term"><span class="o">llm = ChatOpenAI(
+    model=os.environ["LLM_MODEL"],
+    base_url=os.environ["LLM_BASE_URL"],
+    api_key=os.environ["LLM_API_KEY"],
+    extra_body=json.loads(os.environ.get("LLM_EXTRA_BODY") or "null"),
+)</span>
+<span class="o">模型客户端已就绪：deepseek-v4-pro @ https://api.deepseek.com/v1</span></div>
+  <p><code>ChatOpenAI</code> 讲的是 OpenAI Chat Completions 协议，所以同一份代码能跑在 DeepSeek、OpenAI、本地 Ollama 或任何兼容接口上。它<strong>不知道</strong>什么是循环、什么是对话——那是上面一层的事。</p>
+  <p><code>LLM_EXTRA_BODY</code> 是给服务商的私货：对 DeepSeek 来说它关掉思考模式。今天用不到结构化输出，但下周就要靠它了，现在别删。</p>
+  <p class="dim">notebook 开头那段 <code>missing = [...]</code> 检查，是为了缺变量时报一句人话，而不是在 <code>ChatOpenAI</code> 里报一堆看不懂的错。你们自己的 notebook 也照抄。</p>
+</div></section>
+
+<!-- 17 工具与参数说明 -->
+<section class="slide" data-group="代码细节" data-nav="工具与参数说明"><p class="tmark">34–38 min</p><div class="inner">
+  <h2>工具：这次参数有了说明</h2>
+  <div class="term"><span class="o">from typing import Annotated
+
+@tool
+def check_destination_availability(
+    destination: Annotated[str, "要查询是否可预订的目的地"]
+) -> str:
+    """查询某个度假目的地当前是否可以预订。"""
+    available = {"成都": True, "西安": True, "哈尔滨": False,
+                 "三亚": True, "拉萨": False}
+    is_available = available.get(destination, False)
+    return f"{destination}{'可以预订' if is_available else '暂不可预订'}。"</span></div>
+  <p>和上周比多了一样东西：<code>Annotated[str, "..."]</code>。模型拿到的 schema 里，每个参数都会带上这句描述——它就是靠这句话决定该往 <code>destination</code> 里填什么。上周有同学的工具参数被模型乱填，多半就是缺这个。</p>
+  <p>再看返回值：查不到的目的地返回 <code>"……暂不可预订。"</code>，而不是 <code>None</code>。<strong>工具的返回值是给模型读的一条消息</strong>，一定要是模型读得懂的一句话。</p>
+</div></section>
+
+<!-- 18 智能体：多了一个参数 -->
+<section class="slide" data-group="代码细节" data-nav="智能体：多了一个参数"><p class="tmark">38–41 min</p><div class="inner">
+  <h2>智能体：和上周一样，只多了一个参数</h2>
+  <div class="term"><span class="o">agent = create_agent(
+    llm,
+    tools=[check_destination_availability],
+    system_prompt=(
+        "你是一名旅行预订助手，帮助用户查询目的地是否可预订并给出推荐。"
+        "推荐任何目的地之前，一定要先查询它是否可预订。请用中文回答。"
+    ),
+    checkpointer=InMemorySaver(),
+)</span></div>
+  <p><code>checkpointer=InMemorySaver()</code>——就这一行，智能体从"每问一句从零开始"变成"记得住整段对话"。它的原理下一页说。</p>
+  <p>顺便看 <code>reply_text</code> 这个小函数：有些服务商返回的 <code>content</code> 不是字符串，而是一组内容块的列表。它把两种情况统一成文本。以后每个 notebook 都会用它，别再写 <code>result["messages"][-1].content</code> 了。</p>
+  <div class="cols" style="gap:1.2em">
+<div class="term" style="font-size:.7em;margin:.2em 0 .6em"><span class="c"># 开了思考模式的服务商</span>
+<span class="o">[
+ {"type": "thinking", "thinking": "先查成都"},
+ {"type": "text", "text": "成都可以预订，"},
+ {"type": "text", "text": "推荐宽窄巷子。"},
+]</span></div>
+<div class="term" style="font-size:.7em;margin:.2em 0 .6em"><span class="p">reply_text(result)</span>
+<span class="o">'成都可以预订，推荐宽窄巷子。'</span>
+
+<span class="c"># 只拼带 "text" 键的块；
+# thinking、tool_use 块被跳过。
+# 本课 DeepSeek 返回的是字符串。</span></div>
+  </div>
+  <p class="dim">系统提示词里那句"推荐任何目的地之前，一定要先查询它是否可预订"不是废话——刚才演示里你已经看到，它决定了第二轮模型是先查工具还是直接答。</p>
+</div></section>
+
+<!-- 19 检查点存储器与线程 -->
+<section class="slide" data-group="代码细节" data-nav="检查点存储器与线程"><p class="tmark">41–46 min</p><div class="inner">
+  <h2>记忆是怎么来的：检查点存储器 + 线程</h2>
+  <p>检查点存储器（checkpointer）在<strong>每一步之后</strong>把消息历史存一份，键是 <code>thread_id</code>。线程（thread）就是它记住的一段对话。你用一个配置字典选线程，作为 <code>invoke</code> 的第二个参数传进去：</p>
+  <div class="term"><span class="o">session = {"configurable": {"thread_id": "travel-availability-1"}}
+
+result = agent.invoke({"messages": [{"role": "user", "content":
+    "成都、西安、哈尔滨、三亚和拉萨，哪些可以预订？"}]},
+    session)
+result = agent.invoke({"messages": [{"role": "user", "content":
+    "我想去暖和一点的地方，有哪些可以订？"}]},
+    session)</span>
+<span class="o">智能体：根据您的需求，想要去暖和一点的地方，可以预订并符合的是 **三亚**。
+三亚位于海南岛，属于热带海洋性气候，冬季温暖宜人……</span></div>
+  <p>第二轮用户没说过任何城市名，模型却知道哪些可订、哪些不可订——因为检查点存储器把第一轮的五次工具调用和结果<strong>原样回放</strong>给了它。</p>
+  <p>规则只有两条：<strong>传同一个 id，接着上次说；传一个新 id，从头开始。</strong></p>
+</div></section>
+
+<!-- 20 数一数消息 -->
+<section class="slide" data-group="代码细节" data-nav="数一数消息"><p class="tmark">46–49 min</p><div class="inner">
+  <h2>数一数消息：一次 <code>invoke</code> 和一条线程的区别</h2>
+  <p>看运行记录时，最快判断"记忆有没有生效"的办法是<strong>数 <code>result["messages"]</code> 有几条</strong>。以刚才那两轮为例：</p>
+  <div class="term"><span class="c"># 第一轮结束时，这条线程上有 8 条</span>
+<span class="o">HumanMessage  成都、西安、哈尔滨、三亚和拉萨，哪些可以预订？
+AIMessage     tool_calls=[check_destination_availability ×5]   &lt;- 一条消息里五次调用
+ToolMessage   ×5  成都可以预订。……拉萨暂不可预订。             &lt;- 每次调用各一条结果
+AIMessage     查询结果如下：✅ 可以预订：成都、西安、三亚 ……</span>
+
+<span class="c"># 第二轮结束时，同一条线程上有 10 条：上面 8 条 + 新的一问一答</span>
+<span class="o">HumanMessage  我想去暖和一点的地方，有哪些可以订？
+AIMessage     根据您的需求，想要去暖和一点的地方，可以预订并符合的是三亚 ……</span></div>
+  <p>三个结论：<strong><code>invoke</code> 返回的是整条线程的历史</strong>，不只是这一轮；模型第二轮没再调工具，是因为五条 <code>ToolMessage</code> 已经在上下文里；要是第二轮打出来的<strong>第一条</strong>就是"我想去暖和一点的地方"，说明记忆没接上——光数条数还不够，练习二会亲手做出这种情况。</p>
+  <p class="dim">数字会因模型而异：有的模型会把五次调用拆成五条 <code>AIMessage</code>，一轮就是 12 条。数的方法不变。</p>
+</div></section>
+
+<!-- 21 记忆存在哪、存了什么 -->
+<section class="slide" data-group="代码细节" data-nav="记忆存在哪、存了什么"><p class="tmark">49–51 min</p><div class="inner">
+  <h2>记忆存在哪、存了什么、什么时候没了</h2>
+  <table>
+    <tr><th>问题</th><th>答案</th></tr>
+    <tr><td>存了什么</td><td>这条线程的<strong>全部消息</strong>：用户的话、模型的工具调用、工具结果、回复，一条不少</td></tr>
+    <tr><td>存在哪</td><td><code>InMemorySaver</code>——Python 进程的内存里</td></tr>
+    <tr><td>什么时候没了</td><td>内核一重启就全没了；换一个新的 <code>InMemorySaver()</code> 实例也等于全没了</td></tr>
+    <tr><td>多个用户怎么办</td><td>一人一个 <code>thread_id</code>，同一个存储器里互不串台</td></tr>
+    <tr><td>要跨重启、跨进程</td><td>换持久化的检查点存储器，第 13 周讲</td></tr>
+  </table>
+  <p>回到主线第一条——<strong>用户看得懂</strong>。检查点存储器不只是记忆，它还是一份现成的<strong>完整运行记录</strong>：智能体在这条线程上做过的每一步都在里面。你们批注运行记录时要的东西，框架已经替你留好了。</p>
+</div></section>
+
+<!-- 22 工具自己带状态 -->
+<section class="slide" data-group="代码细节" data-nav="工具自己带状态"><p class="tmark">51–54 min</p><div class="inner">
+  <h2>另一种"记忆"：工具自己带状态</h2>
+  <div class="term"><span class="o">_last_destination: str | None = None
+
+@tool
+def get_random_destination() -> str:
+    """随机提供一个度假目的地。"""
+    global _last_destination
+    available = _DESTINATIONS.copy()
+    if _last_destination and len(available) > 1:
+        available.remove(_last_destination)
+    destination = random.choice(available)
+    _last_destination = destination
+    return destination</span></div>
+  <p>这个工具记住上一次选了哪，保证连续两次绝不重复——用户说"不喜欢，换一个"时很有用。但它和检查点存储器是<strong>两回事</strong>：</p>
+  <table>
+    <tr><th></th><th>检查点存储器</th><th>工具里的 <code>global</code></th></tr>
+    <tr><td>记的是</td><td>消息历史</td><td>你自己定义的任何变量</td></tr>
+    <tr><td>按谁隔离</td><td><code>thread_id</code>，一人一份</td><td><strong>不隔离</strong>——整个进程共享，用户 A 选过的会影响用户 B</td></tr>
+    <tr><td>模型看得见吗</td><td>看得见，每轮回放</td><td>看不见，只看到返回值</td></tr>
+  </table>
+  <p class="dim">注意 <code>.copy()</code>：漏了它，<code>remove</code> 会把模块级列表越删越短。</p>
+</div></section>
+
+<!-- 23 流式：谁在说话 -->
+<section class="slide" data-group="代码细节" data-nav="流式：谁在说话"><p class="tmark">54–58 min</p><div class="inner">
+  <h2>流式输出：分清是模型在说、还是工具在说</h2>
+  <div class="term"><span class="o">async for token, metadata in random_trip_agent.astream(
+    {"messages": [{"role": "user", "content": user_input}]}, session,
+    stream_mode="messages",
+):
+    if metadata.get("langgraph_node") == "model" and getattr(token, "content", None):
+        print(token.content, end="", flush=True)
+    elif metadata.get("langgraph_node") == "tools":
+        print()   </span><span class="c"># 在工具调用前后的文本之间换行</span>
+<span class="o">        print("===")</span>
+<span class="o">--- 第 1 轮 ---
+用户：帮我规划一个一日游。
+智能体：我来帮您规划一日游！首先让我随机挑选一个目的地。
+===
+恭喜！这次随机挑选到的目的地是 **新疆喀什**
+……
+--- 第 2 轮 ---
+用户：我不喜欢这个目的地，换一个地方再帮我规划一次。
+智能体：好的，没问题！让我重新为您随机挑选一个目的地。
+===
+这次为您挑选到的目的地是 **广西桂林**</span></div>
+  <p><code>stream_mode="messages"</code> 每来一块就给你一对 <code>(token, metadata)</code>；<code>metadata["langgraph_node"]</code> 告诉你这一块是哪个节点产生的。模型节点的打出来，工具节点的换行——所以输出里"让我先随机挑选一个目的地"和"恭喜！"之间那行 <code>===</code>，就是工具跑了一次的痕迹。</p>
+  <p>两轮共用一个 <code>thread_id</code>，所以第二轮模型知道被否决的是喀什，工具也保证不再抽到它。</p>
+</div></section>
+
+<!-- 24 常见误区 -->
+<section class="slide" data-group="代码细节" data-nav="常见误区"><p class="tmark">58–60 min</p><div class="inner">
+  <h2>这几种写法，看到就要停一下</h2>
+  <ul>
+    <li><strong>每次调用都新建智能体</strong>——把 <code>create_agent(..., checkpointer=InMemorySaver())</code> 写进一个 <code>ask(text)</code> 函数里，每问一句造一个新存储器，记忆永远是空的。智能体建一次，反复 <code>invoke</code>。</li>
+    <li><strong><code>thread_id</code> 写死一个</strong>——所有用户共用 <code>"conversation-1"</code>，用户 A 的病历、订单会出现在用户 B 的上下文里。一人一线程。</li>
+    <li><strong>把工具里的 <code>global</code> 当记忆</strong>——它是进程级的、所有线程共享、重启就丢，模型还看不见它。对话记忆归检查点存储器管。</li>
+    <li><strong>有了检查点存储器还手工塞历史</strong>——把上一轮的回复再拼进这一轮的 <code>messages</code>，历史就重复了一遍，token 翻倍，模型也会被绕晕。</li>
+    <li><strong>上来就画 <code>StateGraph</code></strong>——步骤明明能让模型自己决定，却先写了二十个节点。先 <code>create_agent</code>，不够用再升级。</li>
+  </ul>
+  <div class="mark warn"><p style="margin:0"><code>InMemorySaver</code> 名字里就写着"内存"。它够你做完这门课前 12 周的练习，但<strong>不是</strong>结课项目的记忆方案——第 13 周之前别把它当成能上线的东西。</p></div>
+</div></section>
+
+<!-- 25 练习一 换线程 -->
+<section class="slide" data-group="动手练习" data-nav="练习一 换线程"><p class="tmark">60–66 min</p><div class="inner">
+  <span class="exno">练习一</span>
+  <h2>换一条线程，看记忆去哪了</h2>
+  <h3>目标</h3>
+  <p>亲眼确认：记忆跟着 <code>thread_id</code> 走，换一条线程，模型就不认识你了。</p>
+  <h3>改什么</h3>
+  <p>先把 notebook 从上到下跑通。然后改<strong>单元 9</strong> 的第二次 <code>invoke</code>，不传 <code>session</code>，换一条新线程，再加两行打印：</p>
+  <div class="term"><span class="o">result = agent.invoke(
+    {"messages": [{"role": "user", "content": "我想去暖和一点的地方，有哪些可以订？"}]},
+    {"configurable": {"thread_id": "travel-availability-2"}},   </span><span class="c"># 改这里</span>
+<span class="o">)
+print(f"\n智能体：{reply_text(result)}")
+print(len(result["messages"]))                                 </span><span class="c"># 加</span>
+<span class="o">print(result["messages"][0].content)                           </span><span class="c"># 加</span></div>
+  <h3>预期</h3>
+  <ul>
+    <li>改之前：10 条，第一条是"成都、西安、哈尔滨、三亚和拉萨，哪些可以预订？"</li>
+    <li>改之后：8 条左右，第一条就是"我想去暖和一点的地方"。模型不知道那五个城市，会自己挑几个温暖的地方（我们跑出来是三亚、芭提雅、马尔代夫等）重新查一遍。</li>
+  </ul>
+  <p class="dim">做完改回 <code>session</code>。</p>
+</div></section>
+
+<!-- 26 练习二 bug A -->
+<section class="slide" data-group="动手练习" data-nav="练习二 bug A 新建智能体"><p class="tmark">66–70 min</p><div class="inner">
+  <span class="exno">练习二 · bug A</span>
+  <h2>把智能体装进函数里</h2>
+  <p class="dim">练习二一共放三个 bug，一次只放一个：改 → 跑 → 对照预期 → 改回去。</p>
+  <h3>目标</h3>
+  <p>看清"每次调用都新建智能体"为什么会让记忆失效——哪怕 <code>thread_id</code> 一个字没改。</p>
+  <h3>改什么</h3>
+  <p>在单元 9 下面新建一个单元，把建智能体的代码塞进一个 <code>ask()</code> 函数：</p>
+  <div class="term"><span class="o">def ask(text):
+    a = create_agent(llm, tools=[check_destination_availability],
+                     system_prompt="你是一名旅行预订助手……请用中文回答。",
+                     checkpointer=InMemorySaver())             </span><span class="c"># 每次调用都新建</span>
+<span class="o">    return a.invoke({"messages": [{"role": "user", "content": text}]}, session)
+
+ask("成都、西安、哈尔滨、三亚和拉萨，哪些可以预订？")
+result = ask("我想去暖和一点的地方，有哪些可以订？")
+print(len(result["messages"]), result["messages"][0].content)</span></div>
+  <h3>预期</h3>
+  <p>打印出 8 条左右，第一条是"我想去暖和一点的地方"——和练习一换线程的结果一模一样。<code>session</code> 没变，但每次调用都换了一个新的 <code>InMemorySaver()</code>，上一轮存的东西在旧存储器里，新的里面什么都没有。</p>
+</div></section>
+
+<!-- 27 练习二 bug B -->
+<section class="slide" data-group="动手练习" data-nav="练习二 bug B 流式过滤"><p class="tmark">70–74 min</p><div class="inner">
+  <span class="exno">练习二 · bug B</span>
+  <h2>流式过滤去掉节点判断</h2>
+  <h3>目标</h3>
+  <p>看清 <code>metadata["langgraph_node"]</code> 的作用：不看节点，工具的返回值会混进给用户看的文字里。</p>
+  <h3>改什么</h3>
+  <p>单元 11 的 <code>if</code> 去掉节点判断，其余不动，重跑单元 11：</p>
+  <div class="term"><span class="c"># 原来：if metadata.get("langgraph_node") == "model" and getattr(token, "content", None):</span>
+<span class="o">        if getattr(token, "content", None):
+            print(token.content, end="", flush=True)
+        elif metadata.get("langgraph_node") == "tools":
+            print()
+            print("===")</span></div>
+  <h3>预期</h3>
+  <ul>
+    <li>原来打印 <code>===</code> 的地方不见了，换成一个城市名，比如"……挑选一个目的地。<strong>浙江杭州</strong>太好了！"，三段文字粘在一起。</li>
+    <li>那个城市名是<strong>工具的返回值</strong>：它也有 <code>content</code>，所以走进了第一个分支，<code>elif</code> 再也轮不到。</li>
+  </ul>
+</div></section>
+
+<!-- 28 练习二 bug C -->
+<section class="slide" data-group="动手练习" data-nav="练习二 bug C 忘了更新状态"><p class="tmark">74–78 min</p><div class="inner">
+  <span class="exno">练习二 · bug C</span>
+  <h2>带状态的工具忘了更新状态</h2>
+  <h3>目标</h3>
+  <p>看清带状态的工具，状态必须真的写回去；漏一行，"不重复"的保证就没了。</p>
+  <h3>改什么</h3>
+  <p>单元 11 里注释掉一行，重跑单元 11；然后新建一个单元，<strong>不经过模型</strong>，直接连调 20 次工具：</p>
+  <div class="term"><span class="o">    destination = random.choice(available)
+    </span><span class="c"># _last_destination = destination      注释掉这一行</span>
+<span class="o">    return destination</span></div>
+  <div class="term"><span class="o">picks = [get_random_destination.invoke({}) for _ in range(20)]
+print(picks)
+print("连续重复：", sum(a == b for a, b in zip(picks, picks[1:])))</span></div>
+  <h3>预期</h3>
+  <ul>
+    <li>注释掉时：通常能看到 1–3 次连着抽到同一个地方（我们跑出来 2 次）。把那行恢复再跑：永远是 0。</li>
+    <li>保持注释、回去多跑几次两轮流式对话，第二轮迟早抽到和第一轮一样的地方。DeepSeek 往往自己发现（"哎呀，这次随机又抽到了……"）再调一次工具——bug 被模型兜住了，但多花了一次调用；换个不细心的模型，用户收到的就还是原来那个地方。</li>
+  </ul>
+  <p class="dim">三个 bug 全部改回去，从上到下再跑一遍，确认 notebook 恢复正常。</p>
+</div></section>
+
+<!-- 29 练习三 两个用户 -->
+<section class="slide" data-group="动手练习" data-nav="练习三 两个用户"><p class="tmark">78–82 min</p><div class="inner">
+  <span class="exno">练习三</span>
+  <h2>两个用户，三种 <code>thread_id</code> 写法</h2>
+  <h3>目标</h3>
+  <p>搞清楚上线时 <code>thread_id</code> 该怎么分：分错了，要么用户之间串台，要么谁都记不住。</p>
+  <h3>改什么</h3>
+  <p>在 notebook 末尾新建一个单元，用单元 7 的 <code>agent</code> 模拟一个网站：张三先来，李四后来，三种写法各跑一遍：</p>
+  <div class="term"><span class="o">from uuid import uuid4
+
+def chat(user_id, text, mode):
+    if mode == "每人一条":
+        thread_id = f"user-{user_id}"
+    elif mode == "全站共用":
+        thread_id = "conversation-1"
+    else:                                   </span><span class="c"># 每次新建</span>
+<span class="o">        thread_id = str(uuid4())
+    result = agent.invoke({"messages": [{"role": "user", "content": text}]},
+                          {"configurable": {"thread_id": thread_id}})
+    return reply_text(result)
+
+for mode in ["每人一条", "全站共用", "每次新建"]:
+    chat("zhangsan", "我叫张三，下周想去成都。", mode)
+    chat("lisi", "我叫李四。", mode)
+    print(f"【{mode}】", chat("lisi", "我叫什么？我想去哪？", mode), "\n")</span></div>
+</div></section>
+
+<!-- 30 练习三 预期 -->
+<section class="slide" data-group="动手练习" data-nav="练习三 预期"><p class="tmark">82–84 min</p><div class="inner">
+  <span class="exno">练习三</span>
+  <h2>跑完再翻这一页：对照预期</h2>
+  <h3>预期</h3>
+  <ul>
+    <li><strong>每人一条</strong>：记得"你叫李四"，但"你还没告诉我想去哪"——正确。</li>
+    <li><strong>全站共用</strong>：说出"之前您提到下周想去成都……那是张三的对话"——李四看到了张三的行程，这就是串台，<strong>不能上线</strong>。</li>
+    <li><strong>每次新建</strong>：连"你叫什么"都答不上，每句话都从头开始。</li>
+  </ul>
+  <div class="mark"><p style="margin:0">能上线的只有"每人一条"。但它也不是终点：同一个人想同时聊两趟旅行，两段对话会混在一条线程里——那时就得按"用户 + 会话"来分，比如 <code>f"user-{user_id}-{session_id}"</code>。</p></div>
+  <p class="dim">三个练习的记录都写进本周作业的 <code>week2-homework.md</code>，随作业一起交。</p>
+</div></section>
+
+<!-- 29 本周作业一 -->
+<section class="slide" data-group="收尾" data-nav="本周作业一 Dify"><p class="tmark">84–85 min</p><div class="inner">
+  <span class="exno">作业一</span>
+  <h2>在 Dify 上开发并发布一个 demo 应用</h2>
+  <p>全景图第②行，亲手搭一个。本地用 Docker 起一套，或者直接用 Dify 云版：</p>
+  <div class="term"><span class="p">$</span> git clone https://github.com/langgenius/dify.git
+<span class="p">$</span> cd dify/docker &amp;&amp; cp .env.example .env
+<span class="p">$</span> docker compose up -d
+<span class="c"># 浏览器打开 http://localhost/install，建管理员账号</span></div>
+  <ul>
+    <li>在"设置 → 模型供应商"里接上课程用的模型：DeepSeek，或者 OpenAI-API-compatible 填 <code>LLM_BASE_URL</code>。</li>
+    <li>主题自选，做一个 Agent 或 Chatflow 应用，<strong>至少带一个工具或一个知识库</strong>。</li>
+    <li>发布成 WebApp，再用它的 API 调一次（<code>POST /v1/chat-messages</code>）。</li>
+  </ul>
+  <p><strong>交：</strong>编排页截图、WebApp 对话截图、API 调用的命令和返回。</p>
+  <p class="dim">两个作业交同一个文件：自己仓库里的 <code>02-explore-agentic-frameworks/week2-homework.md</code>，截图放同目录的 <code>images/</code>。</p>
+</div></section>
+
+<!-- 30 本周作业二 -->
+<section class="slide" data-group="收尾" data-nav="本周作业二 OpenClaw 接微信"><p class="tmark">85–86 min</p><div class="inner">
+  <span class="exno">作业二</span>
+  <h2>安装运行 OpenClaw，接上微信聊天</h2>
+  <p>全景图第①行最右边那一格，也亲手搭一个。需要 Node 24.16 以上，Windows 用 WSL2：</p>
+  <div class="term"><span class="p">$</span> curl -fsSL https://openclaw.ai/install.sh | bash
+<span class="p">$</span> openclaw onboard --install-daemon   <span class="c"># 配模型，把 Gateway 装成常驻服务</span>
+<span class="p">$</span> openclaw gateway status
+<span class="p">$</span> npx -y @tencent-weixin/openclaw-weixin-cli@latest install
+<span class="c"># 终端出二维码，用微信扫码绑定</span></div>
+  <ul>
+    <li>微信先升到最新版，接入命令以"我 → 设置 → 插件 → ClawBot"卡片上给的为准。</li>
+    <li>在微信里和它聊三轮以上，<strong>至少一轮让它动用工具或技能</strong>。</li>
+  </ul>
+  <p><strong>交：</strong><code>openclaw gateway status</code> 的输出、微信聊天截图、<code>~/.openclaw</code> 下这次会话记录的一段；再对照架构图三，用三五句话说清一条微信消息从进来到回复出去经过了哪几层。</p>
+  <div class="mark warn"><p style="margin:0">OpenClaw 会在你电脑上真的执行命令：命令审批保持开启，别给它开 sudo，能用小号就别用主力微信号。截图和命令里的 key 一律打码，提交前 <code>git diff</code> 看一眼没有 <code>sk-</code>。</p></div>
+</div></section>
+
+<!-- 31 下周见 -->
+<section class="slide" data-group="收尾" data-nav="下周见"><p class="tmark">86–87 min</p><div class="inner">
+  <h2>下周见</h2>
+  <p class="big">智能体设计模式：清晰的指令、校验过的输出、一个智能体只干一件事。</p>
+  <p>今天的智能体回答全是散文，下游程序没法用。下周之后，你能让它返回一个经过 Pydantic 校验的对象，用 <code>Literal</code> 把它的选择框死在允许的范围内，还能把一件事拆给两个各司其职的智能体去做——这是第 8 周多智能体工作流的雏形。</p>
+  <p class="dim">别忘了：预习第 03 课，把它的 notebook 跑一遍，<code>check_endpoint.py</code> 的 <code>structured</code> 一项必须 PASS；<code>LLM_EXTRA_BODY</code> 保留着，下周结构化输出要靠它。</p>
+</div></section>
+
+</main>
+</div>
+
+<div class="hud"><span id="pg">1</span> / <span id="total">31</span></div>
+<button id="navbtn" type="button" aria-label="显示或隐藏目录">目录</button>
+<div class="hint">← → 翻页 · 点击内容区右半下一页 · T 收起目录</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, pg=document.getElementById('pg');
+  document.getElementById('total').textContent=slides.length;
+
+  var tocbody=document.getElementById('tocbody'), links=[], lastGroup=null;
+  slides.forEach(function(s,k){
+    var g=s.getAttribute('data-group'), t=s.getAttribute('data-nav')||('第 '+(k+1)+' 页');
+    if(g!==lastGroup){var h=document.createElement('p');h.className='g';h.textContent=g;tocbody.appendChild(h);lastGroup=g;}
+    var a=document.createElement('a');a.href='#'+(k+1);
+    a.innerHTML='<span class="no">'+(k+1)+'</span>'+t;
+    a.addEventListener('click',function(e){e.preventDefault();show(k);if(window.innerWidth<1000)document.body.classList.remove('shownav');});
+    tocbody.appendChild(a);links.push(a);
+  });
+
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('on',k===i);});
+    links.forEach(function(a,k){a.classList.toggle('cur',k===i);});
+    if(links[i]&&links[i].scrollIntoView)links[i].scrollIntoView({block:'nearest'});
+    pg.textContent=i+1;
+    if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+    window.scrollTo(0,0);
+  }
+  function fromHash(){var n=parseInt(location.hash.slice(1),10);show(isNaN(n)?0:n-1);}
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key==='t'||e.key==='T'){toggleNav();}
+  });
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('a,button')||window.getSelection().toString())return;
+    var r=this.getBoundingClientRect();
+    show(e.clientX-r.left>r.width/2? i+1 : i-1);
+  });
+  function toggleNav(){
+    if(window.innerWidth<1000){document.body.classList.toggle('shownav');}
+    else{document.body.classList.toggle('hidenav');}
+  }
+  document.getElementById('navbtn').addEventListener('click',toggleNav);
+  document.getElementById('tocfold').addEventListener('click',toggleNav);
+  document.getElementById('tocrail').addEventListener('click',toggleNav);
+  window.addEventListener('hashchange',fromHash);
+  fromHash();
+})();
+</script>
+</body>
+</html>

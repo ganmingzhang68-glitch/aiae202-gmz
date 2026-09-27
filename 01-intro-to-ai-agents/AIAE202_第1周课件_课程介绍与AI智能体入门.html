@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 1 周课件 · 课程介绍、AI 智能体入门 — AIAE202</title>
+<style>
+:root{
+  --paper:#FAFAF7; --ink:#22303B; --soft:#5A6873;
+  --navy:#1B3A5C; --teal:#2A7F7A; --amber:#B5761B; --wine:#A8425E;
+  --rule:#D9DEE3; --code:#F0F3F4;
+  --tbg:#182530; --tink:#DAE5ED; --tdim:#7E93A3;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",Georgia,serif;
+  --sans:"Noto Sans SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:clamp(17px,1.55vw,23px);line-height:1.7}
+.deckwrap{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+#toc{position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--rule);padding:1rem .85rem 3.5rem;font-size:.78rem;line-height:1.5}
+#toc .navhead{font-family:var(--mono);font-size:.72rem;color:var(--teal);margin:0 0 .8rem}
+#toc .g{color:var(--navy);font-weight:700;margin:1rem 0 .25rem;font-size:.8rem}
+#toc a{display:block;color:var(--soft);text-decoration:none;border-left:2px solid var(--rule);padding:.16rem 0 .16rem .6rem;margin:.06rem 0}
+#toc a:hover{color:var(--teal);border-left-color:var(--teal)}
+#toc a.cur{color:var(--navy);border-left-color:var(--navy);background:var(--code);font-weight:600}
+#toc a .no{font-family:var(--mono);font-size:.68rem;color:var(--soft);margin-right:.4em}
+main#deck{min-width:0}
+body.hidenav .deckwrap{grid-template-columns:1fr}
+body.hidenav #toc{display:none}
+#navbtn{position:fixed;left:.7rem;bottom:.8rem;z-index:30;font-family:var(--sans);font-size:.74rem;color:var(--navy);background:#fff;border:1px solid var(--rule);border-radius:5px;padding:.28em .7em;cursor:pointer}
+#navbtn:hover{border-color:var(--teal);color:var(--teal)}
+@media (min-width:1000px){#navbtn{display:none}}
+#toc .tochead{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:0 0 .8rem}
+#toc .tochead .navhead{margin:0}
+#tocfold{font-family:var(--mono);font-size:.85rem;color:var(--soft);background:none;border:1px solid var(--rule);border-radius:4px;padding:.02em .5em;cursor:pointer;line-height:1.4}
+#tocfold:hover{color:var(--teal);border-color:var(--teal)}
+#tocrail{display:none;position:fixed;left:0;top:0;bottom:0;width:26px;z-index:25;background:#fff;border-right:1px solid var(--rule);cursor:pointer;align-items:center;justify-content:center}
+#tocrail span{writing-mode:vertical-rl;font-family:var(--mono);font-size:.68rem;color:var(--soft);letter-spacing:.35em}
+#tocrail:hover span{color:var(--teal)}
+body.hidenav #tocrail{display:flex}
+@media (max-width:999px){#tocrail{display:none!important}}
+@media (max-width:999px){
+  .deckwrap{grid-template-columns:1fr}
+  #toc{position:fixed;left:0;top:0;bottom:0;width:min(78vw,300px);height:auto;z-index:20;transform:translateX(-100%);box-shadow:4px 0 18px rgba(27,58,92,.15)}
+  body.shownav #toc{transform:none}
+}
+@media (prefers-reduced-motion:no-preference){#toc{transition:transform .18s ease}}
+.slide{position:relative;display:none;min-height:100vh;padding:5vh 5vw;flex-direction:column;justify-content:center}
+.tmark{position:absolute;top:2.4vh;right:5vw;margin:0;font-family:var(--mono);font-size:.7rem;letter-spacing:.04em;color:var(--soft);opacity:.75}
+.slide.on{display:flex}
+.inner{max-width:1020px;width:100%;margin:0 auto}
+h1,h2{font-family:var(--serif);color:var(--navy);line-height:1.3;margin:0 0 .6em}
+h1{font-size:2.2em}
+h2{font-size:1.55em}
+h3{font-size:1.05em;color:var(--navy);margin:1.1em 0 .35em}
+p{margin:0 0 .7em}
+ul,ol{margin:.2em 0 .8em;padding-left:1.3em}
+li{margin:.34em 0}
+strong{color:var(--navy)}
+em{font-style:normal;color:var(--teal)}
+.dim{color:var(--soft)}
+code{font-family:var(--mono);font-size:.86em;background:var(--code);padding:.06em .32em;border-radius:3px}
+.term{background:var(--tbg);color:var(--tink);font-family:var(--mono);font-size:.8em;line-height:1.75;border-radius:8px;padding:.8em 1em;overflow-x:auto;white-space:pre;margin:.6em 0 .9em}
+.term .p{color:#6FB3AE}.term .c{color:var(--tdim)}.term .o{color:#B9C9D4}
+.term .mk{font-size:.78em;border-radius:3px;padding:0 .5em;margin-left:.6em;background:var(--amber);color:#182530}
+.term .mk.bad{background:var(--wine);color:#fff}
+table{border-collapse:collapse;width:100%;font-size:.82em;line-height:1.55;margin:.5em 0 .9em}
+th{text-align:left;color:var(--navy);border-bottom:2px solid var(--navy);padding:.4em .55em}
+td{padding:.42em .55em;border-bottom:1px solid var(--rule);vertical-align:top}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:2.2em}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.mark{border-left:5px solid var(--teal);background:#fff;border:1px solid var(--rule);border-left-width:5px;border-radius:0 6px 6px 0;padding:.6em 1em;margin:.8em 0}
+.mark.warn{border-left-color:var(--wine);background:#FBF3F5}
+.kicker{font-size:.78em;color:var(--teal);margin:0 0 .9em}
+.big{font-family:var(--serif);font-size:1.5em;color:var(--navy);line-height:1.5;margin:.2em 0 .6em}
+.cover h1{font-size:2.7em;margin:.25em 0 .3em}
+.cover .line{width:4.5em;height:4px;background:var(--teal);margin:1.2em 0 1.4em}
+.exno{display:inline-block;font-family:var(--mono);font-size:.72em;color:#fff;background:var(--amber);border-radius:4px;padding:.12em .6em;margin-bottom:.7em}
+.hud{position:fixed;right:1.1rem;bottom:.9rem;font-family:var(--mono);font-size:.72rem;color:var(--soft);user-select:none}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:.9rem;font-size:.7rem;color:var(--soft);opacity:.8}
+@media print{
+  body{font-size:15px}
+  .slide{display:flex!important;min-height:auto;page-break-after:always;padding:2.2em 2.4em}
+  .tmark{top:.9em;right:2.4em}
+  .hud,.hint,#toc,#navbtn,#tocrail{display:none}
+  .deckwrap{display:block}
+  .term{white-space:pre-wrap}
+}
+</style>
+</head>
+<body>
+<div class="deckwrap">
+<nav id="toc" aria-label="课件目录"><div class="tochead"><p class="navhead">AIAE202 · 第 1 周</p><button id="tocfold" type="button" aria-label="收起目录" title="收起目录">«</button></div><div id="tocbody"></div></nav>
+<div id="tocrail" role="button" tabindex="0" aria-label="展开目录" title="展开目录"><span>目 录</span></div>
+<main id="deck">
+
+<!-- 1 封面 -->
+<section class="slide cover on" data-group="封面" data-nav="封面"><p class="tmark">0–1 min</p><div class="inner">
+  <p class="kicker">AIAE202 Agentic AI 开发实践（Agentic AI 开发工程师微专业 · 课程四）</p>
+  <h1>课程介绍、AI 智能体入门</h1>
+  <div class="line"></div>
+  <p class="dim">第 1 周 · 线上授课 90 分钟</p>
+</div></section>
+
+<!-- 2 今天讲这些 -->
+<section class="slide" data-group="课程介绍" data-nav="今天讲这些"><p class="tmark">1–2 min</p><div class="inner">
+  <h2>今天讲这些</h2>
+  <ul style="font-size:1.1em">
+    <li>这门课是什么：目标、上法、成绩、要求</li>
+    <li>一段现场演示：一个会用工具的旅行智能体，从零到能用</li>
+    <li>AI 智能体到底是什么、什么时候该用</li>
+    <li>把课程环境跑起来，读懂第一个 notebook</li>
+    <li>作业</li>
+  </ul>
+</div></section>
+
+<!-- 3 位置 -->
+<section class="slide" data-group="课程介绍" data-nav="课程的位置"><p class="tmark">2–4 min</p><div class="inner">
+  <h2>这门课在哪个位置</h2>
+  <p>咱们微专业一共四门课：前两门是基础，后两门<strong>同期开设、各自独立</strong>，可以一起上，也可以只上一门：</p>
+  <table>
+    <tr><td>AIAE101</td><td>人工智能与程序设计基础</td><td class="dim">会编程</td></tr>
+    <tr><td>AIAE102</td><td>Python 程序设计与实践</td><td class="dim">会用数据和模型</td></tr>
+    <tr><td>AIAE201</td><td>软件开发工具与流程基础</td><td class="dim">会做工程</td></tr>
+    <tr><td><strong>AIAE202</strong></td><td><strong>Agentic AI 开发实践 —— 本课程</strong></td><td class="dim">会交付 Agent 产品</td></tr>
+  </table>
+  <p>前两门课你们学会了写 Python、跑数据。AIAE201 补的是工程流程那一层：命令行、Git、测试、部署。这门课讲另一件事：<strong>让大语言模型不只是回答问题，而是替人把事做了</strong>——调工具、查资料、走流程、留记录。两门课互不为前提：这门课用到的命令行和 Git 只有最基本的几条，今天就会带着过一遍；结课作品也是一个独立的智能体产品，不依赖另一门课的项目。</p>
+</div></section>
+
+<!-- 4 为什么 -->
+<section class="slide" data-group="课程介绍" data-nav="为什么学这门课"><p class="tmark">4–6 min</p><div class="inner">
+  <h2>为什么现在要学 Agent 开发</h2>
+  <p>过去两年大家用大模型的方式，基本是"问一句、答一句"：模型只会<strong>生成文本</strong>，做不了任何事。真正有用的系统要能查数据库、调 API、发消息、跑代码——这就是 <strong>AI 智能体（Agent）</strong>：以大语言模型为推理引擎，配上工具和知识，替用户在真实世界里<strong>采取行动</strong>。</p>
+  <p>你们可能会问：<em>不就是给模型加几个函数吗，有什么好学十六周的？</em></p>
+  <p>先说结论：加函数只是第一天的事。难的是后面——模型什么时候该调工具、调错了怎么办、多步任务怎么规划、几个智能体怎么协作、有风险的动作谁来批、上线之后怎么知道它在干什么。<strong>这些才是"Agent 产品"和"能跑的 demo"之间的距离</strong>，也是这门课要练的。</p>
+</div></section>
+
+<!-- 5 主线延续 -->
+<section class="slide" data-group="课程介绍" data-nav="站到另一边"><p class="tmark">6–7 min</p><div class="inner">
+  <h2>同一句话，这门课站到另一边</h2>
+  <p>用 AI 编程代理写代码的人，都得做到九个字：<strong>看得懂、拦得住、接得住</strong>——坐在屏幕前，审 AI 敲的每一条命令。同期的 AIAE201 讲的就是这一边。</p>
+  <p>这门课站到另一边：<strong>你来设计那个替人干活的 AI</strong>。你的智能体也会调用工具、也会执行动作，而屏幕前的用户，未必读得懂它在干什么。所以用户对 AI 的要求，这门课要变成你对自己作品的要求：</p>
+  <ul>
+    <li>每一步为什么调这个工具、传这些参数，<strong>用户看得懂</strong>——要有可观测性；</li>
+    <li>有风险的动作，<strong>拦得住</strong>——要有人工审批和防护；</li>
+    <li>模型犯错、卡住，系统<strong>接得住</strong>——要有回退、评估和记录。</li>
+  </ul>
+  <p class="dim">这三条贯穿十六周，每一课都会回到它。</p>
+</div></section>
+
+<!-- 6 结课作品 -->
+<section class="slide" data-group="课程介绍" data-nav="结课要交什么"><p class="tmark">7–9 min</p><div class="inner">
+  <h2>结课的时候，你要交出什么</h2>
+  <p>一个你自己专业里的<strong>智能体产品</strong>：一个能在浏览器里访问的简单界面（聊天框或表单就够），后面接一个能替用户干活的智能体，用容器打包部署。题目自己选择，比如：</p>
+  <ul>
+    <li>实验数据助手：读取仓库里的数据表，按用户要求算指标、画图、写报告</li>
+    <li>文献调研智能体：检索本地论文库，规划阅读路线，生成带引用的综述</li>
+    <li>仿真任务管家：按自然语言指令提交批量仿真、查进度、汇总结果</li>
+  </ul>
+  <p>而且要具备生产级智能体的完整要素：<strong>工具 → 检索 → 记忆 → 规划 → 人工审批 → 可观测性 → 评估 → 部署</strong>。仓库里每一环都要留下记录——工具设计、提示词版本、评估集、链路日志、部署记录，一样不缺。</p>
+  <p class="dim">第 7 周立项选题，中间有几个检查点，第 16 周当着全班演示答辩。同时在上 AIAE201 的同学，可以把两门课的作品合成一个系统，但这不是要求。</p>
+</div></section>
+
+<!-- 7 更重要的 -->
+<section class="slide" data-group="课程介绍" data-nav="比做出来更重要"><p class="tmark">9–12 min</p><div class="inner">
+  <h2>比"做出来"更重要的事</h2>
+  <p>说实话，让模型调几个工具、凑一个能演示的智能体，现在让 AI 跑 1–2 小时也能凑合出来。这门课真正要练的是下面三条，也是考核的重点：</p>
+  <ul>
+    <li>拿到一段智能体的运行记录——它收到的消息、发起的工具调用、拿到的结果、最后的回答——你能<strong>逐条讲清楚</strong>它为什么这么做，并指出哪一步不对劲；</li>
+    <li>智能体答错了、循环了、把工具用歪了，你能<strong>找到原因</strong>：是提示词、是工具描述、是上下文，还是模型本身；</li>
+    <li>系统里任何一个工具、任何一段提示词，你都<strong>说得清</strong>它是干什么的、为什么这么写、有什么风险。</li>
+  </ul>
+  <p>一句话：智能体可以替用户干活，但不能替你负责。</p>
+</div></section>
+
+<!-- 8 学什么 -->
+<section class="slide" data-group="课程介绍" data-nav="这学期学什么"><p class="tmark">12–15 min</p><div class="inner">
+  <h2>为此，这 16 周你会学到</h2>
+  <div class="cols">
+    <div>
+      <h3>动手的部分</h3>
+      <ul>
+        <li>工具调用：把 Python 函数交给模型去用</li>
+        <li>智能体式 RAG：让它自己检索、自己判断够不够</li>
+        <li>记忆与线程：多轮对话、跨会话记住用户</li>
+        <li>多智能体与工作流：LangGraph 图、扇出扇入、条件路由</li>
+        <li>协议：MCP 接工具，A2A 接其他智能体</li>
+        <li>可观测、评估、部署、本地运行、签名回执</li>
+      </ul>
+    </div>
+    <div>
+      <h3>方法的部分</h3>
+      <ul>
+        <li>智能体设计模式：清晰指令、结构化输出、单一职责</li>
+        <li>规划与拆解：把大目标变成可执行的子任务</li>
+        <li>可信赖：人在回路、风险分级、审计日志</li>
+        <li>元认知：让智能体反思自己的答案并回退</li>
+        <li>上下文工程：该放什么进模型，什么时候压缩</li>
+      </ul>
+    </div>
+  </div>
+  <p class="dim">框架用 LangChain 1.x 和 LangGraph 1.x，模型用任意 OpenAI 兼容接口——换服务商只改三个环境变量。</p>
+</div></section>
+
+<!-- 9 16周 -->
+<section class="slide" data-group="课程介绍" data-nav="16 周安排"><p class="tmark">15–17 min</p><div class="inner">
+  <h2>16 周怎么走</h2>
+  <table>
+    <tr><th>周</th><th>内容（对应课程编号）</th><th>项目进度</th></tr>
+    <tr><td>1–3</td><td>智能体入门、框架、设计模式（00–03）</td><td></td></tr>
+    <tr><td>4–6</td><td>工具调用、智能体式 RAG、可信赖智能体（04–06）</td><td></td></tr>
+    <tr><td>7–9</td><td>规划设计、多智能体、元认知（07–09）</td><td>第 7 周立项 · 第 9 周 v0.1</td></tr>
+    <tr><td>10–13</td><td>生产可观测性、协议、上下文工程、记忆（10–13）</td><td>第 13 周带记忆和审批的 v0.5</td></tr>
+    <tr><td>14–15</td><td>浏览器与本地智能体、部署扩展、安全回执（15–18）</td><td>第 15 周 v1.0 部署</td></tr>
+    <tr><td>16</td><td>演示、互相试用、答辩</td><td>Demo Day</td></tr>
+  </table>
+  <p>项目从第 7 周开始，每周往前推一点，不存在期末突击这回事。</p>
+</div></section>
+
+<!-- 10 每周怎么上 -->
+<section class="slide" data-group="课程介绍" data-nav="每周怎么上"><p class="tmark">17–20 min</p><div class="inner">
+  <h2>每周的课是怎么上的</h2>
+  <p>课前花半小时左右读当周课程的 README、把对应的 notebook 跑一遍。课上 90 分钟，我讲一段、演示一段，大家跟着动手。</p>
+  <p>动手的部分，每周都包括：</p>
+  <ul>
+    <li>先<strong>自己动手</strong>把课程 notebook 从上到下跑通，改一两处看结果怎么变——保证这件事你亲手干过；</li>
+    <li>再<strong>让 AI 做一个相似的</strong>：每课 README 末尾都有一份作业，要求在另一个领域按同样的步骤再做一个，AI 随便用；</li>
+    <li>最后<strong>挑毛病</strong>：把智能体的消息历史调出来，一条条看它为什么调这个工具、结果对不对，发现问题就改掉。</li>
+  </ul>
+  <p>每周交一份作业叫 <strong>智能体运行解读</strong>——就是给你自己那个智能体的运行记录做批注，说清每步在干嘛、哪里有问题。今天就会写第一份。</p>
+  <p class="dim">全程录像，当堂没做完的练习，24 小时内补交就行。</p>
+</div></section>
+
+<!-- 11 成绩 -->
+<section class="slide" data-group="课程介绍" data-nav="成绩怎么算"><p class="tmark">20–21 min</p><div class="inner">
+  <h2>成绩怎么算</h2>
+  <table>
+    <tr><td>每周作业（notebook + 智能体运行解读）</td><td>30%</td></tr>
+    <tr><td>Git 上的过程记录与协作</td><td>15%</td></tr>
+    <tr><td>结课项目：部署好的智能体 + 评估集 + 全流程记录</td><td>45%</td></tr>
+    <tr><td>规范与复盘：AI 使用记录、失败分析、互评</td><td>10%</td></tr>
+  </table>
+  <p>评分不看你的智能体回答得多漂亮，看四件事：<strong>工具和提示词设计得清楚没有、有没有独立的评估、风险管住没有、你自己是不是真明白它为什么这么做。</strong></p>
+</div></section>
+
+<!-- 12 底线 -->
+<section class="slide" data-group="课程介绍" data-nav="几条底线"><p class="tmark">21–22 min</p><div class="inner">
+  <h2>结课有几条底线：</h2>
+  <ul>
+    <li>智能体必须真的部署起来、能访问（本地的容器）；</li>
+    <li>要有一份评估集和评估闸门，不能靠"我试了几句感觉不错"；</li>
+    <li>有副作用的动作——写库、发信、花钱、删文件——必须过人工审批；</li>
+    <li>对系统里 AI 写的代码和提示词，答辩时要能明白：这是什么、为什么这么写、有什么风险。</li>
+  </ul>
+  <div class="mark warn"><p style="margin:0"><strong>两条纪律：不许提交自己解释不了的代码；不许把 API key 提交进仓库。</strong>用多少 AI 都行，但交上来的东西，都得是你能负责的。</p></div>
+</div></section>
+
+<!-- 13 要求 -->
+<section class="slide" data-group="课程介绍" data-nav="对大家的要求"><p class="tmark">22–23 min</p><div class="inner">
+  <h2>对大家的几点要求</h2>
+  <ul>
+    <li><strong>环境</strong>：本周内把课程环境跑通——第一个 notebook 从上到下不报错。装不上的先问 AI，别一个人耗着。</li>
+    <li><strong>每周交点东西</strong>：作业 notebook、提交或运行解读，至少一样，当周完成；缺课看录像后一天内补上。</li>
+    <li><strong>AI 随便用，但要记账</strong>：关键的提示和你自己改了什么，记进 <code>AI_USAGE.md</code>；"AI 说没问题"不算数，评估通过才算数。</li>
+    <li><strong>敏感的东西别喂给模型</strong>：真实病历、没发表的科研数据、合同、密码密钥——一律不发。你的智能体接的每一个工具，也要问一遍"它会把什么数据发给模型"。</li>
+    <li><strong>提问有格式</strong>：先说你的理解，贴完整的消息历史和报错（别截半张图），说说你已经试过什么。</li>
+  </ul>
+</div></section>
+
+<!-- 14 确认 -->
+<section class="slide" data-group="课程介绍" data-nav="下课前三件事"><p class="tmark">23–24 min</p><div class="inner">
+  <h2>今天下课前，确认三件事</h2>
+  <ol style="font-size:1.15em">
+    <li>用课程模板仓库建好自己的仓库并克隆到本机（Windows 同学在 WSL2 的 Ubuntu 里）；</li>
+    <li>拿到一个模型 API key（默认用 DeepSeek），填进 <code>.env</code>，<code>check_endpoint.py</code> 四项检查全部 PASS；</li>
+    <li>Python 3.12 虚拟环境装好依赖，第一课的 notebook 跑通。</li>
+  </ol>
+  <p class="dim">这三件是下周一切内容的地基。好，课程介绍到此，接下来看真东西。</p>
+</div></section>
+
+<!-- 15 演示引入 -->
+<section class="slide" data-group="Demo 演示" data-nav="Demo 演示"><p class="tmark">24–25 min</p><div class="inner">
+  <h2 style="font-size:2em">Demo 演示：<br>一个会用工具的旅行智能体，从零到能用</h2>
+</div></section>
+
+<!-- 16 看点 -->
+<section class="slide" data-group="Demo 演示" data-nav="盯三件事"><p class="tmark">25–27 min</p><div class="inner">
+  <h2>看的时候，重点盯三件事</h2>
+  <ul style="font-size:1.1em">
+    <li>模型<strong>什么时候决定调用工具</strong>——不是每个问题都调，它在"读"工具的说明来做判断；</li>
+    <li>一次回答背后有<strong>几条消息</strong>——用户的话、模型发起的工具调用、工具返回的结果、最后的回复，一条不少地在屏幕上滚；</li>
+    <li>最后怎么从"等它整段写完"，变成"<strong>一个词一个词地流出来</strong>"。</li>
+  </ul>
+</div></section>
+
+<!-- 17 回顾 -->
+<section class="slide" data-group="Demo 演示" data-nav="刚才发生了什么"><p class="tmark">27–31 min</p><div class="inner">
+  <h2>刚才发生了什么——以及哪周讲</h2>
+  <table>
+    <tr><th>刚才的步骤</th><th>背后是什么</th><th>哪周讲清楚</th></tr>
+    <tr><td>读 <code>.env</code>，建了个 <code>ChatOpenAI</code> 客户端</td><td>模型只是配置，换服务商改三个变量</td><td>第 1 周</td></tr>
+    <tr><td>写了个带 docstring 的函数，加 <code>@tool</code></td><td>docstring 就是模型看到的工具说明</td><td>第 1、4 周</td></tr>
+    <tr><td><code>create_agent</code> 把模型、工具、指令接在一起</td><td>工具调用循环：问模型 → 执行工具 → 回传 → 再问</td><td>第 1–2 周</td></tr>
+    <tr><td>打印 <code>result["messages"]</code>，一共四条</td><td>消息历史，也是你以后批注的对象</td><td>第 1、10 周</td></tr>
+    <tr><td>换 <code>astream</code>，答案逐字出现</td><td>流式输出，聊天界面的标配</td><td>第 1 周</td></tr>
+    <tr><td>再问一句，它忘了上一句</td><td>没有记忆——检查点器与线程</td><td>第 2、13 周</td></tr>
+  </table>
+</div></section>
+
+<!-- 18 观察作业 -->
+<section class="slide" data-group="Demo 演示" data-nav="留个小任务"><p class="tmark">31–32 min</p><div class="inner">
+  <h2>边看边记三样</h2>
+  <p>看演示的时候记下来，课后写进本周作业：</p>
+  <ul style="font-size:1.1em">
+    <li>刚才<strong>完全没看懂</strong>的一步——智能体当时在干什么？</li>
+    <li>你觉得<strong>有点可疑</strong>的一步——比如它凭什么推荐了那个地方？</li>
+    <li>你最想问的一个问题。</li>
+  </ul>
+  <p class="dim">没有标准答案，写真实感受。</p>
+</div></section>
+
+<!-- 19 入门开始 -->
+<section class="slide" data-group="智能体入门" data-nav="从定义开始"><p class="tmark">32–33 min</p><div class="inner">
+  <p class="kicker">从最底下这层开始</p>
+  <h2>AI 智能体到底是什么</h2>
+  <p>刚才那个旅行助手，就是一个最小的智能体。接下来我假设大家<strong>只用过聊天框</strong>，从头讲。一句话的定义：</p>
+  <p class="big">AI 智能体是让大语言模型真正<strong>做事</strong>的系统——<br>给它工具和知识，让它作用于外部世界，而不只是回复提示词。</p>
+  <p>把这句话拆开，有三个词要抓住：<strong>系统</strong>、<strong>大语言模型</strong>、<strong>做事</strong>。下面三页一个一个说。</p>
+</div></section>
+
+<!-- 20 系统三部件 -->
+<section class="slide" data-group="智能体入门" data-nav="系统：环境、传感器、执行器"><p class="tmark">33–34 min</p><div class="inner">
+  <h2>它是一个系统，不是一个模型</h2>
+  <p>每个智能体的核心都有三部分，拿旅行预订智能体举例：</p>
+  <table>
+    <tr><th>部件</th><th>是什么</th><th>旅行智能体里</th></tr>
+    <tr><td><strong>环境</strong></td><td>智能体工作的空间</td><td>预订平台本身</td></tr>
+    <tr><td><strong>传感器</strong></td><td>它怎么读取环境的当前状态</td><td>查酒店空房、查机票价格</td></tr>
+    <tr><td><strong>执行器</strong></td><td>它怎么采取行动</td><td>订房、发确认信息、取消预订</td></tr>
+  </table>
+  <p>在代码里，传感器和执行器长得一样：都是<strong>工具</strong>——一个被暴露给模型的 Python 函数。区别在于后果：<em>查</em>是只读的，<em>订</em>是有副作用的。这个区别以后每周都要用，今天先记住。</p>
+</div></section>
+
+<!-- 21 LLM 与做事 -->
+<section class="slide" data-group="智能体入门" data-nav="LLM 只会生成文本"><p class="tmark">34–36 min</p><div class="inner">
+  <h2>大语言模型只会生成文本，"做事"靠的是系统</h2>
+  <p>智能体在 LLM 出现之前就有了。LLM 带来的是：能理解自然语言、结合上下文推理、把一句含糊的请求变成具体的行动计划。但它自己<strong>动不了手</strong>——模型的输出永远是一段文本。</p>
+  <p>"做事"是这样发生的：模型输出一段特殊格式的文本，说"我要调用 <code>get_destinations</code>，参数是……"；<strong>系统</strong>真的去执行那个函数，把结果作为一条消息回传给模型；模型再决定是继续调工具还是给出答案。这一来一回就叫<strong>工具调用循环</strong>，是所有智能体框架的核心。</p>
+  <p>所以还有两样东西决定了智能体能做什么：</p>
+  <ul>
+    <li><strong>可用的工具</strong>——取决于它所处的环境，以及你选择接了什么进去。旅行智能体也许能查航班，但不能改客户记录；</li>
+    <li><strong>记忆与知识</strong>——短期记忆是当前这段对话，长期记忆是客户数据库、过往交互。旅行智能体可能"记得"你偏好靠窗座位。</li>
+  </ul>
+</div></section>
+
+<!-- 22 类型 -->
+<section class="slide" data-group="智能体入门" data-nav="智能体的类型"><p class="tmark">36–38 min</p><div class="inner">
+  <h2>智能体有几种，一个例子贯穿</h2>
+  <table>
+    <tr><th>类型</th><th>它做什么</th><th>旅行智能体示例</th></tr>
+    <tr><td>简单反射型</td><td>按写死的规则行事，没有记忆也不规划</td><td>看到投诉邮件 → 转给客服，仅此而已</td></tr>
+    <tr><td>基于模型的反射型</td><td>维护一个关于世界的内部模型并更新它</td><td>跟踪历史机票价格，标记突然变贵的航线</td></tr>
+    <tr><td>目标驱动型</td><td>心里有目标，一步步想办法达成</td><td>从你所在地出发，把机票、租车、酒店整趟订好</td></tr>
+    <tr><td>效用驱动型</td><td>不满足于找到一个方案，权衡后找最优的</td><td>在成本与便利之间权衡，找最符合偏好的行程</td></tr>
+    <tr><td>学习型</td><td>从反馈中学习，随时间变好</td><td>根据行程后的问卷调整今后的推荐</td></tr>
+    <tr><td>分层式</td><td>高层拆任务，分派给下层</td><td>"取消行程"拆成退机票、退酒店、退租车</td></tr>
+    <tr><td>多智能体系统</td><td>多个独立智能体协作或竞争</td><td>酒店、航班、娱乐各一个智能体分工</td></tr>
+  </table>
+  <p class="dim">今天演示的是目标驱动型；第 8 周做分层式和多智能体。这张表不要求背，要求的是看到一个系统，能说出它是哪一种、缺哪一种能力。</p>
+</div></section>
+
+<!-- 23 何时用 -->
+<section class="slide" data-group="智能体入门" data-nav="什么时候该用"><p class="tmark">38–39 min</p><div class="inner">
+  <h2><em>能</em>用智能体，不代表就<em>该</em>用</h2>
+  <p>智能体比一次普通的模型调用贵、慢、也更难预测。只有下面这些场景才值得：</p>
+  <ul>
+    <li><strong>开放式问题</strong>——解决问题的步骤无法预先写死，需要模型动态地找路径；</li>
+    <li><strong>多步骤流程</strong>——任务需要跨多轮使用工具，而不只是一次查询或一次生成；</li>
+    <li><strong>随时间改进</strong>——希望系统能根据用户反馈或环境信号变得更聪明。</li>
+  </ul>
+  <div class="mark"><p style="margin:0">反过来：步骤固定、能写成 if-else 的，<strong>就写 if-else</strong>；只要一次总结、一次翻译的，<strong>直接调模型</strong>。把不该用智能体的地方硬做成智能体，是结课项目里最常见的失分点之一。第 6 周"可信赖的智能体"会专门讲什么时候<em>不</em>该用。</p></div>
+</div></section>
+
+<!-- 24 方案基础 -->
+<section class="slide" data-group="智能体入门" data-nav="一个智能体由什么组成"><p class="tmark">39–41 min</p><div class="inner">
+  <h2>一个智能体由什么组成</h2>
+  <p>构建智能体的第一件事，是定义<em>它能做什么</em>——它的工具、动作和行为。本课程里，一个智能体由三样东西组成：</p>
+  <ul>
+    <li><strong>模型</strong>：任意暴露了 OpenAI 兼容接口、支持工具调用的模型——DeepSeek、OpenAI、MiniMax、本地 Ollama 或 vLLM，改三个环境变量就能换；</li>
+    <li><strong>知识</strong>：来自你自己数据源的资料，第 5 周用向量库把它接进来；</li>
+    <li><strong>工具</strong>：任何被暴露为工具的 Python 函数，或者一个 MCP 服务器（第 11 周）。</li>
+  </ul>
+  <p>光有这三样还不够。智能体要跨很多步骤行动，你没法每一步都手工写提示词，所以需要<strong>智能体式模式</strong>——一套可复用的提示与编排策略；而<strong>框架</strong>把这些模式做成了现成的积木。本课程用的是 <strong>LangChain 1.x</strong>（智能体）和 <strong>LangGraph 1.x</strong>（工作流），两者是同一个技术栈的两层。</p>
+</div></section>
+
+<!-- 25 环境 -->
+<section class="slide" data-group="智能体入门" data-nav="课程环境长什么样"><p class="tmark">41–44 min</p><div class="inner">
+  <h2>课程环境长什么样：一次安装、四个变量</h2>
+  <p>全部十八课共用一套环境：Python 3.12、一次 <code>pip install</code>、一个 <code>.env</code> 文件。除了模型服务商，不需要任何云账号。</p>
+  <div class="term"><span class="p">$</span> python3 -m venv .venv && source .venv/bin/activate
+<span class="p">$</span> pip install -r requirements.txt
+<span class="p">$</span> cp .env.example .env            <span class="c"># 然后打开 .env 填四个值</span></div>
+  <div class="term"><span class="o">LLM_BASE_URL="https://api.deepseek.com/v1"
+LLM_API_KEY="sk-..."
+LLM_MODEL="deepseek-v4-pro"
+LLM_EXTRA_BODY='{"thinking": {"type": "disabled"}}'</span>   <span class="c"># 关掉思考模式，结构化输出才能用</span></div>
+  <p><code>.env</code> 已经写进 <code>.gitignore</code>，所以你的 key 只会留在本机——<strong>这也是它不能出现在任何 notebook 里的原因</strong>。</p>
+</div></section>
+
+<!-- 26 check_endpoint -->
+<section class="slide" data-group="智能体入门" data-nav="先检查接口"><p class="tmark">44–51 min</p><div class="inner">
+  <h2>动手之前，先让脚本替你检查接口</h2>
+  <div class="term"><span class="p">$</span> python scripts/check_endpoint.py
+<span class="o">Endpoint: https://api.deepseek.com/v1
+Model:    deepseek-v4-pro
+
+capability  result    used by lessons
+chat        PASS      all lessons
+tools       PASS      01, 03-05, 07-13, 16-18 (create_agent needs tool calling)
+structured  PASS      03, 07, 08 (structured output forces a tool call)
+vision      PASS      10, 15 — optional
+
+Ready: this endpoint supports everything the course requires.</span></div>
+  <p><code>chat</code> 和 <code>tools</code> 必须过。<code>tools</code> 失败，说明这个模型不支持函数调用，换一个；只有 <code>structured</code> 失败，多半是没设 <code>LLM_EXTRA_BODY</code>。</p>
+  <p class="dim">换服务商的做法：OpenAI、MiniMax、智谱、本地 Ollama 的地址和模型名都列在 <code>.env.example</code> 里，改完再跑一次这个脚本。</p>
+</div></section>
+
+<!-- 27 读 notebook -->
+<section class="slide" data-group="智能体入门" data-nav="第一个 notebook 四段"><p class="tmark">51–55 min</p><div class="inner">
+  <h2>第一个 notebook，一共四段</h2>
+  <div class="term"><span class="c"># 1 模型客户端：读 .env，换服务商只改这三个变量</span>
+<span class="o">llm = ChatOpenAI(model=..., base_url=..., api_key=..., extra_body=...)</span>
+
+<span class="c"># 2 工具：一个普通函数，docstring 就是模型看到的说明</span>
+<span class="o">@tool
+def get_destinations() -> list[str]:
+    """获取热门度假目的地列表。"""</span>
+
+<span class="c"># 3 智能体：模型 + 工具 + 指令，跑工具调用循环</span>
+<span class="o">agent = create_agent(llm, tools=[get_destinations],
+                     system_prompt="你是一名热心的旅行顾问……")
+result = agent.invoke({"messages": [{"role": "user", "content": "..."}]})</span>
+
+<span class="c"># 4 流式：一个词一个词地拿</span>
+<span class="o">async for token, metadata in agent.astream(..., stream_mode="messages"): ...</span></div>
+  <p>今天不要求写出来，要求的是：给你这四段，你能指出<strong>哪一行决定了模型能用什么工具、哪一行决定了它的角色、结果里的四条消息各是谁发的</strong>。</p>
+</div></section>
+
+<!-- 28 四问 -->
+<section class="slide" data-group="智能体入门" data-nav="读运行记录四问"><p class="tmark">55–57 min</p><div class="inner">
+  <h2>读任何一条工具调用，问四个问题</h2>
+  <p>拿条真家伙练一下——这是智能体消息历史里完全可能出现的一条：</p>
+  <div class="term"><span class="o">AIMessage  tool_calls=[{"name": "send_email",
+           "args": {"to": "all@company.com", "subject": "退款已批准", "body": "..."}}]</span></div>
+  <ol>
+    <li><strong>它调了什么工具？</strong><code>send_email</code>，发邮件。</li>
+    <li><strong>参数从哪来的？</strong>收件人是全公司——用户说过这个吗，还是模型自己编的？</li>
+    <li><strong>模型凭什么这么判断？</strong>回头看系统提示词和工具的 docstring：有没有告诉它"退款要先确认"？</li>
+    <li><strong>出错了怎么办，可逆吗？</strong>邮件发出去就收不回来。稳妥做法：这类工具执行前必须停下来等人批（第 4、6 周）。</li>
+  </ol>
+  <p class="dim">这四问，以后每周批注智能体运行记录时都用，建议抄进笔记。</p>
+</div></section>
+
+<!-- 29 停一下 -->
+<section class="slide" data-group="智能体入门" data-nav="看到就停一下"><p class="tmark">57–58 min</p><div class="inner">
+  <h2>看到这几样，先停一下</h2>
+  <ul>
+    <li>有副作用的工具——写库、发信、付款、删文件——<strong>没有人工审批</strong>就直接执行；</li>
+    <li>代码或 notebook 里出现 <code>sk-</code> 开头的字符串——API key 写死进去了；</li>
+    <li>一个 <code>run_shell(cmd)</code> 之类的工具，让模型执行<strong>任意命令</strong>；</li>
+    <li>工具返回的内容里夹着"忽略之前的指令……"——<strong>提示注入</strong>，模型可能照做；</li>
+    <li>回答里出现了工具根本没返回过的数据——它在编，"几乎正确"最难发现；</li>
+    <li>工具调用循环没有步数上限——模型卡住时会一直调、一直烧钱。</li>
+  </ul>
+  <p>不是说这些永远不能出现，而是：<strong>出现它们的时候，你必须清楚地知道自己在批准什么。</strong>完整的清单在第 6 课讲义里，每周批注时对照。</p>
+</div></section>
+
+<!-- 30 练习一 -->
+<section class="slide" data-group="动手练习" data-nav="练习一 跑起课程环境"><p class="tmark">58–66 min</p><div class="inner">
+  <span class="exno">练习一</span>
+  <h2>把课程环境跑起来</h2>
+  <div class="mark"><p style="margin:0"><strong>"课程环境"就是你从课程模板建出来的自己的仓库。</strong>模板里现在是前三课，后面的课会随进度加进去，到时候教大家怎么同步。接下来 16 周的练习和作业 notebook 都放在里面对应课程的 <code>code_samples/</code> 目录下。</p></div>
+  <ol>
+    <li>先接受课程组织 <code>aiae202</code> 的邀请（查邮件或 github.com/aiae202），再打开课程模板仓库 <code>github.com/aiae202/ai-agentic-develop</code>，点绿色 <strong>Use this template → Create a new repository</strong>（相当于 fork 一份到自己账号，但可以设成私有）；仓库名填 <code>aiae202-你的学号</code>，可见性选 <strong>Private</strong>，点 Create；</li>
+    <li>进入你的新仓库：Settings → Collaborators，把老师和助教的 GitHub 用户名加进去；</li>
+    <li>克隆到本机（Windows 同学在 WSL2 的 Ubuntu 终端里），装依赖、填 <code>.env</code>、跑检查：</li>
+  </ol>
+  <div class="term"><span class="p">$</span> git clone git@github.com:你的用户名/aiae202-你的学号.git
+<span class="p">$</span> cd aiae202-你的学号
+<span class="p">$</span> python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+<span class="p">$</span> cp .env.example .env               <span class="c"># 填入 LLM_API_KEY</span>
+<span class="p">$</span> python scripts/check_endpoint.py   <span class="c"># chat 和 tools 必须 PASS</span>
+<span class="p">$</span> jupyter notebook
+<span class="c"># 打开 01-intro-to-ai-agents/code_samples/01-python-langchain-agent.ipynb</span></div>
+  <p>notebook 从上到下跑完不报错，把仓库链接填进助教的收集表。到这一步，课程环境就算跑起来了；卡住的先问 AI，再举手。</p>
+</div></section>
+
+<!-- 31 练习二 -->
+<section class="slide" data-group="动手练习" data-nav="练习二 读运行记录（演示）"><p class="tmark">66–74 min</p><div class="inner">
+  <span class="exno">练习二</span>
+  <h2>读一份真实的智能体运行记录</h2>
+  <p>我给智能体布置了个任务：<strong>"我想找一个暖和的海滩目的地，推荐一个。"</strong>它有一个 <code>get_destinations</code> 工具，返回十个城市。下面是 <code>result["messages"]</code> 打印出来的四条，最后它让用户"放心下单"。<strong>这一段由我来演示和讲解</strong>——先一起把记录过一遍，标记的地方值得停：</p>
+  <div class="term"><span class="o">HumanMessage  我想找一个暖和的海滩目的地，推荐一个。
+AIMessage     tool_calls=[{'name': 'get_destinations', 'args': {}}]
+ToolMessage   ["成都", "杭州", "哈尔滨", "西安", "北京", "敦煌", "重庆", "南京", "洛阳", "拉萨"]
+AIMessage     推荐你去**三亚**——国内最暖和的海滩目的地之一，阳光沙滩全年可玩。
+              本周最低机票约 **¥880 起**（往返），价格合适，可以放心下单。</span> <span class="mk bad">1</span> <span class="mk bad">2</span></div>
+  <div class="term"><span class="c"># 顺便看一眼它的代码开头</span>
+<span class="o">llm = ChatOpenAI(model="deepseek-v4-pro", base_url="https://api.deepseek.com/v1",
+                 api_key="sk-3f9a...c21e")</span> <span class="mk">3</span></div>
+  <p>三处标记，每处都问两个问题：它在干什么？有什么不对？——大家先猜，我再逐条讲。</p>
+</div></section>
+
+<!-- 32 对答案 -->
+<section class="slide" data-group="动手练习" data-nav="练习二 逐条讲解"><p class="tmark">74–80 min</p><div class="inner">
+  <h2>逐条讲下来</h2>
+  <ul>
+    <li><strong>标记 1</strong>——最要命的一处：工具返回的十个城市里<strong>根本没有三亚</strong>，也没有一个海滨城市。模型调了工具、拿了结果，然后把结果扔在一边，凭自己的知识答了。<strong>正确的回答是"可选目的地里没有海滩"，它却给了一个列表外的推荐，还让人放心下单。</strong>这就是"几乎正确"——不去核对工具结果的人根本发现不了。</li>
+    <li><strong>标记 2</strong>——"本周最低机票约 ¥880 起"：没有任何工具查过机票，这个数字是编的（同一段代码连跑三次，报的价各不相同）。回答里出现工具没返回过的数据，就该停。</li>
+    <li><strong>标记 3</strong>——API key 写死在代码里。这段代码一提交，key 就进了仓库历史，删都删不干净。</li>
+  </ul>
+  <p>修法在系统提示词和环境变量里，不在模型里：</p>
+  <div class="term"><span class="o">system_prompt="……只推荐 get_destinations 返回的目的地。"
+              "不要报价格或余票，告诉用户这些需要到预订渠道核实。"
+api_key=os.environ["LLM_API_KEY"]</span></div>
+  <p class="dim">改完再跑一遍、再读一遍四条消息——实测改完后最后一条变成"当前的热门目的地列表中暂时没有暖和的海滩可选"。这个"改、跑、读"的循环，就是这门课每周都在做的事。</p>
+</div></section>
+
+<!-- 33 课后分析 -->
+<section class="slide" data-group="动手练习" data-nav="课后分析 三个工具"><p class="tmark">80–86 min</p><div class="inner">
+  <span class="exno">课后分析</span>
+  <h2>三个工具，有一个不能直接交给模型</h2>
+  <p>这是同一个智能体里先后定义的三个工具。<strong>课后</strong>用刚讲的"四问"逐个分析（不认识的写法查文档或问 AI）：哪个危险？为什么？怎么改才安全？</p>
+  <div class="term"><span class="c"># 一：查目的地天气</span>
+<span class="o">@tool
+def get_weather(city: str) -> str:
+    """返回某个城市今天的天气。"""</span>
+
+<span class="c"># 二：给客户发确认邮件</span>
+<span class="o">@tool
+def send_confirmation(to: str, body: str) -> str:
+    """给客户发送预订确认邮件。"""</span>
+
+<span class="c"># 三：查订单，方便起见直接执行 SQL</span>
+<span class="o">@tool
+def query_orders(sql: str) -> str:
+    """在订单数据库上执行一条 SQL 语句并返回结果行。"""</span></div>
+  <p class="dim">分析结论写进本周作业的第三项，下一页说作业怎么交。</p>
+</div></section>
+
+<!-- 34 作业 -->
+<section class="slide" data-group="收尾" data-nav="本周作业"><p class="tmark">86–89 min</p><div class="inner">
+  <h2>本周作业：一个 notebook 加一个文件</h2>
+  <p>在自己仓库的 <code>01-intro-to-ai-agents/code_samples/</code> 下：</p>
+  <ol>
+    <li><strong>作业 notebook</strong> <code>01-assignment-你的主题.ipynb</code>：按第 01 课 README 末尾的作业要求，在旅行以外的领域做一个相似的智能体——至少两个工具、打印完整消息历史、一次流式调用、一段反思；跑 <code>python scripts/validate_notebooks.py --path ...</code> 通过；</li>
+    <li><strong>运行解读</strong> <code>week1-homework.md</code>，写三项：演示观察三条（没看懂的、可疑的、最想问的）；<code>check_endpoint.py</code> 的输出原样粘贴；三个工具里危险的是哪个、为什么、怎么改。</li>
+  </ol>
+  <p>写完推送上去：</p>
+  <div class="term"><span class="p">$</span> git add 01-intro-to-ai-agents/code_samples/
+<span class="p">$</span> git commit -m "第 1 周：作业 notebook 与课后作业"
+<span class="p">$</span> git push</div>
+  <p class="dim">提交前看一眼 <code>git diff</code>，确认里面没有 <code>sk-</code>。另外：把"四问"抄进笔记；预习第 02 课（探索智能体框架），把它的 notebook 跑一遍。</p>
+</div></section>
+
+<!-- 35 结尾 -->
+<section class="slide" data-group="收尾" data-nav="下周见"><p class="tmark">89–90 min</p><div class="inner">
+  <h2>下周见</h2>
+  <p class="big">智能体框架：记忆、线程，还有工具怎么带状态。</p>
+  <p>今天的智能体每问一句都是从零开始，上一句说过什么它全忘了。下周之后，你能让它记住一整段对话、在多个用户之间互不串台，还能看懂框架把这些事拆成了哪几块积木。</p>
+  <p class="dim">别忘了下课前那三件事：建好仓库并克隆、<code>.env</code> 与接口检查、第一个 notebook 跑通。</p>
+</div></section>
+
+</main>
+</div>
+
+<div class="hud"><span id="pg">1</span> / <span id="total">35</span></div>
+<button id="navbtn" type="button" aria-label="显示或隐藏目录">目录</button>
+<div class="hint">← → 翻页 · 点击内容区右半下一页 · T 收起目录</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, pg=document.getElementById('pg');
+  document.getElementById('total').textContent=slides.length;
+
+  var tocbody=document.getElementById('tocbody'), links=[], lastGroup=null;
+  slides.forEach(function(s,k){
+    var g=s.getAttribute('data-group'), t=s.getAttribute('data-nav')||('第 '+(k+1)+' 页');
+    if(g!==lastGroup){var h=document.createElement('p');h.className='g';h.textContent=g;tocbody.appendChild(h);lastGroup=g;}
+    var a=document.createElement('a');a.href='#'+(k+1);
+    a.innerHTML='<span class="no">'+(k+1)+'</span>'+t;
+    a.addEventListener('click',function(e){e.preventDefault();show(k);if(window.innerWidth<1000)document.body.classList.remove('shownav');});
+    tocbody.appendChild(a);links.push(a);
+  });
+
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('on',k===i);});
+    links.forEach(function(a,k){a.classList.toggle('cur',k===i);});
+    if(links[i]&&links[i].scrollIntoView)links[i].scrollIntoView({block:'nearest'});
+    pg.textContent=i+1;
+    if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+    window.scrollTo(0,0);
+  }
+  function fromHash(){var n=parseInt(location.hash.slice(1),10);show(isNaN(n)?0:n-1);}
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key==='t'||e.key==='T'){toggleNav();}
+  });
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('a,button')||window.getSelection().toString())return;
+    var r=this.getBoundingClientRect();
+    show(e.clientX-r.left>r.width/2? i+1 : i-1);
+  });
+  function toggleNav(){
+    if(window.innerWidth<1000){document.body.classList.toggle('shownav');}
+    else{document.body.classList.toggle('hidenav');}
+  }
+  document.getElementById('navbtn').addEventListener('click',toggleNav);
+  document.getElementById('tocfold').addEventListener('click',toggleNav);
+  document.getElementById('tocrail').addEventListener('click',toggleNav);
+  window.addEventListener('hashchange',fromHash);
+  fromHash();
+})();
+</script>
+</body>
+</html>
