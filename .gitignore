@@ -38,3 +38,7 @@ chroma-data/
 08-multi-agent/code_samples/workflows-langgraph/python/2*.md
 13-agent-memory/cognee_graph.html
 17-creating-local-ai-agents/code_samples/sample_project/
+dify_request.json
+test_dify_api.sh
+start_remote_jupyter.bat
+
